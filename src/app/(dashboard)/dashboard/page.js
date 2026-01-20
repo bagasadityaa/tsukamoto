@@ -18,9 +18,11 @@ export default function DashboardPage() {
 
   if (loading) return <p>Loading...</p>;
   return (
-    <div>
+    <div className="flex justify-between">
       <h1>Halo, {user?.email}</h1>
-      <button onClick={logout}>Logout</button>
+      <button onClick={logout} className="p-2 bg-gray-500">
+        Logout
+      </button>
     </div>
   );
 }
