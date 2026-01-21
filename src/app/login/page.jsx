@@ -15,11 +15,16 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useAuth } from "@/hooks/useAuth";
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const { user } = useAuth();
 
+  if (user) {
+    window.location.href = "/dashboard";
+  }
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
@@ -30,7 +35,6 @@ export default function LoginPage() {
       alert("Login failed: " + err.message);
     }
   };
-  console.log(email, password);
 
   return (
     <div className="flex h-screen w-full justify-center items-center ">
@@ -63,7 +67,7 @@ export default function LoginPage() {
               </div>
             </div>
             <CardFooter className="w-full">
-              <Button type="submit" className="w-full bg-black m-2">
+              <Button type="submit" className="w-full  m-2">
                 Login
               </Button>
             </CardFooter>

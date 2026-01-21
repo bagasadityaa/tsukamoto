@@ -1,4 +1,13 @@
-import { Calendar, Home, Inbox, Search, Settings } from "lucide-react";
+"use client";
+import {
+  Calculator,
+  Database,
+  History,
+  Home,
+  Search,
+  Settings,
+  User,
+} from "lucide-react";
 
 import {
   Sidebar,
@@ -11,41 +20,44 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { ModeToggle } from "./mode-toggle";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function AppSidebar() {
   const items = [
     {
       title: "Home",
-      url: "#",
+      url: "/dashboard",
       icon: Home,
     },
     {
-      title: "Inbox",
-      url: "#",
-      icon: Inbox,
+      title: "Perhitungan Detergen",
+      url: "/dashboard/perhitungan",
+      icon: Calculator,
     },
     {
-      title: "Calendar",
-      url: "#",
-      icon: Calendar,
+      title: "Riwayat Perhitungan",
+      url: "/dashboard/riwayat",
+      icon: History,
     },
     {
-      title: "Search",
-      url: "#",
-      icon: Search,
+      title: "Data",
+      url: "/dashboard/data",
+      icon: Database,
     },
     {
-      title: "Settings",
-      url: "#",
-      icon: Settings,
+      title: "Profile",
+      url: "/dashboard/profile",
+      icon: User,
     },
   ];
+  const { user } = useAuth();
   return (
     <Sidebar>
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>
-            Application <ModeToggle />
+          <SidebarGroupLabel className="flex justify-between">
+            <h1 className="text-base">Halo, {user?.email}</h1>
+            <ModeToggle />
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
