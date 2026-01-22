@@ -1,18 +1,9 @@
 "use client";
 import { ChartAreaDefault } from "@/components/charts";
 import { TableDemo } from "@/components/table-demo";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/hooks/useAuth";
 import { logout } from "@/lib/auth";
-import { signOut } from "firebase/auth";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
@@ -20,14 +11,12 @@ export default function DashboardPage() {
   const { user, loading } = useAuth();
 
   const router = useRouter();
-
   useEffect(() => {
     if (!loading && !user) {
       router.push("/login");
     }
   }, [user, loading]);
 
-  if (loading) return <p>Loading...</p>;
   return (
     <div>
       <nav className="flex justify-between w-full items-center mx-2">

@@ -8,7 +8,7 @@ export default function DashboardLayout({ children }) {
       <main className="flex-1 p-4 min-h-screen ">
         <div className="flex items-start">
           {/* Trigger di luar AppSidebar */}
-          <SidebarTrigger className="mr-4" />
+          <SidebarTrigger className="mr-2" />
           <div className="flex-1">{children}</div>
         </div>
       </main>

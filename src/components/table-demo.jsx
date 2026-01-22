@@ -1,3 +1,4 @@
+"use client";
 import {
   Table,
   TableBody,
@@ -8,6 +9,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useEffect, useState } from "react";
 
 const invoices = [
   {
@@ -54,29 +56,51 @@ const invoices = [
   },
 ];
 
-export function TableDemo() {
+export function TableDemo({ tableHead, tableRow }) {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) return null;
   return (
     <Table>
-      <TableCaption>A list of your recent invoices.</TableCaption>
       <TableHeader>
         <TableRow>
-          <TableHead>Tanggal</TableHead>
-          <TableHead>Berat (kg)</TableHead>
-          <TableHead>Kotor</TableHead>
-          <TableHead>Warna</TableHead>
-          <TableHead>Hasil (ml)</TableHead>
+          {tableHead === undefined ? (
+            <>
+              <TableHead>Tanggal</TableHead>
+              <TableHead>Berat (kg)</TableHead>
+              <TableHead>Kotor</TableHead>
+              <TableHead>Warna</TableHead>
+              <TableHead>Hasil (ml)</TableHead>
+            </>
+          ) : (
+            tableHead.map((head) => (
+              <TableHead key={head.key}>{head.label}</TableHead>
+            ))
+          )}
         </TableRow>
       </TableHeader>
       <TableBody>
-        {invoices.map((invoice) => (
-          <TableRow key={invoice.invoice}>
-            <TableCell className="font-medium">{invoice.invoice}</TableCell>
-            <TableCell>{invoice.paymentStatus}</TableCell>
-            <TableCell>{invoice.paymentMethod}</TableCell>
-            <TableCell>{invoice.totalAmount}</TableCell>
-            <TableCell>{invoice.totalAmount}</TableCell>
-          </TableRow>
-        ))}
+        {tableRow === undefined
+          ? invoices.map((invoice) => (
+              <TableRow key={invoice.invoice}>
+                <TableCell className="font-medium">{invoice.invoice}</TableCell>
+                <TableCell>{invoice.paymentStatus}</TableCell>
+                <TableCell>{invoice.paymentMethod}</TableCell>
+                <TableCell>{invoice.totalAmount}</TableCell>
+                <TableCell>{invoice.totalAmount}</TableCell>
+              </TableRow>
+            ))
+          : tableRow.map((row) => (
+              <TableRow key={row.id}>
+                {tableHead.map((head) => (
+                  <TableCell key={head.key}>{row[head.key]}</TableCell>
+                ))}
+              </TableRow>
+            ))}
       </TableBody>
       <TableFooter>
         <TableRow>

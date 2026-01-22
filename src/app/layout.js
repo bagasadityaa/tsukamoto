@@ -1,5 +1,6 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import "katex/dist/katex.min.css";
 import ThemesProvider from "@/components/theme-provider";
 
 const geistSans = Geist({

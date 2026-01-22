@@ -1,13 +1,5 @@
 "use client";
-import {
-  Calculator,
-  Database,
-  History,
-  Home,
-  Search,
-  Settings,
-  User,
-} from "lucide-react";
+import { Calculator, Database, History, Home, User } from "lucide-react";
 
 import {
   Sidebar,
@@ -19,8 +11,8 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { ModeToggle } from "./mode-toggle";
 import { useAuth } from "@/hooks/useAuth";
+import { ModeToggle } from "./mode-toggle";
 
 export default function AppSidebar() {
   const items = [
