@@ -7,37 +7,33 @@ import {
 import { TableDemo } from "./table-demo";
 import { BlockMath } from "react-katex";
 
-const items = [
-  {
-    value: "notifications",
-    trigger: "Notification Settings",
-    content:
-      "Manage how you receive notifications. You can enable email alerts for updates or push notifications for mobile devices.",
-  },
-  {
-    value: "privacy",
-    trigger: "Privacy & Security",
-    content:
-      "Control your privacy settings and security preferences. Enable two-factor authentication, manage connected devices, review active sessions, and configure data sharing preferences. You can also download your data or delete your account.",
-  },
-  {
-    value: "billing",
-    trigger: "Billing & Subscription",
-    content:
-      "View your current plan, payment history, and upcoming invoices. Update your payment method, change your subscription tier, or cancel your subscription.",
-  },
-];
+export function AccordionMultiple({ beratPakaian, tingkatKotor, cfg }) {
+  const nilaBerat =
+    (beratPakaian - cfg.berat.mid) / (cfg.berat.max - cfg.berat.mid);
 
-export function AccordionMultiple() {
+  const nilaKotor =
+    (tingkatKotor - cfg.kotor.mid) / (cfg.kotor.max - cfg.kotor.mid);
   const fuzzifikasiTableHead = [
-    { label: "Berat", key: "berat" },
+    { label: "Variable", key: "variable" },
     { label: "Himpunan", key: "himpunan" },
+    { label: "Rumus", key: "rumus" },
     { label: "Nilai", key: "nilai" },
   ];
   const fuzzifikasiTableRow = [
-    { id: 1, berat: "Ringan", himpunan: "Kotor", nilai: "0.33" },
-    { id: 2, berat: "Sedang", himpunan: "Kotor", nilai: "0.66" },
-    { id: 3, berat: "Berat", himpunan: "Kotor", nilai: "1" },
+    {
+      id: 1,
+      variable: `Berat (${beratPakaian} kg)`,
+      himpunan: "Berat",
+      rumus: `μ(${beratPakaian}) = (${beratPakaian} - ${cfg.berat.mid}) / (${cfg.berat.max} - ${cfg.berat.mid})`,
+      nilai: nilaBerat,
+    },
+    {
+      id: 2,
+      variable: `Kotor (${tingkatKotor})`,
+      himpunan: "Tinggi",
+      rumus: `μ(${tingkatKotor}) = (${tingkatKotor} - ${cfg.kotor.mid}) / (${cfg.kotor.max} - ${cfg.kotor.mid})`,
+      nilai: nilaKotor,
+    },
   ];
   const AturanTableHead = [
     { label: "Rule", key: "rule" },

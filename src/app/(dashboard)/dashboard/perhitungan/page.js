@@ -16,65 +16,100 @@ export default function PerhitunganDetergenPage() {
   const [tingkatKotor, setTingkatKotor] = useState("");
   const [warnaPakaian, setWarnaPakaian] = useState("");
   const [hasil, setHasil] = useState();
-  function muBerat(x) {
-    if (x <= 5) return 0;
-    if (x >= 10) return 1;
-    return (x - 5) / 5;
+
+  // ===== konfigurasi (disesuaikan) =====
+  const cfg = {
+    berat: {
+      mid: 5,
+      max: 10,
+    },
+    // ubah mid/max kotor agar nilai kotor = 3 memberikan membership > 0
+    kotor: {
+      mid: 5, // sebelumnya 5
+      max: 10, // sebelumnya 10
+    },
+    deterjen: {
+      min: 20,
+      max: 100,
+    },
+  };
+
+  function muNaik(x, a, b) {
+    if (x <= a) return 0;
+    if (x >= b) return 1;
+    return (x - a) / (b - a);
   }
 
-  function muSedang(x) {
-    if (x <= 5) return 1;
-    if (x >= 10) return 0;
-    return (10 - x) / 5;
+  function muTurun(x, a, b) {
+    if (x <= a) return 1;
+    if (x >= b) return 0;
+    return (b - x) / (b - a);
   }
 
-  function muKotorTinggi(x) {
-    if (x <= 5) return 0;
-    if (x >= 10) return 1;
-    return (x - 5) / 5;
+  function muBerat(x, cfg) {
+    return muNaik(x, cfg.berat.mid, cfg.berat.max);
   }
 
-  function zDeterjen(alpha) {
-    return 20 + alpha * 80;
+  function muSedang(x, cfg) {
+    return muTurun(x, cfg.berat.mid, cfg.berat.max);
   }
 
-  function hitungDetergen(berat, kotor) {
-    const beratBerat = muBerat(berat);
-    const beratSedang = muSedang(berat);
-    const kotorTinggi = muKotorTinggi(kotor);
+  function muKotorTinggi(x, cfg) {
+    return muNaik(x, cfg.kotor.mid, cfg.kotor.max);
+  }
 
+  function zDeterjen(alpha, cfg) {
+    return cfg.deterjen.min + alpha * (cfg.deterjen.max - cfg.deterjen.min);
+  }
+
+  function hitungDetergen(berat, kotor, cfg) {
+    const beratBerat = muBerat(berat, cfg);
+    const beratSedang = muSedang(berat, cfg);
+    const kotorTinggi = muKotorTinggi(kotor, cfg);
+
+    // Rule 1: IF berat BERAT AND kotor TINGGI
     const alpha1 = Math.min(beratBerat, kotorTinggi);
+    const z1 = zDeterjen(alpha1, cfg);
+
+    // Rule 2: IF berat SEDANG AND kotor TINGGI
     const alpha2 = Math.min(beratSedang, kotorTinggi);
+    const z2 = zDeterjen(alpha2, cfg);
 
-    const z1 = zDeterjen(alpha1);
-    const z2 = zDeterjen(alpha2);
+    const totalAlpha = alpha1 + alpha2;
+    if (totalAlpha === 0) return cfg.deterjen.min.toFixed(2); // kembalikan min sebagai fallback
 
-    const Z = (alpha1 * z1 + alpha2 * z2) / (alpha1 + alpha2);
-    console.log(
-      "Z: ",
-      z1,
-      z2,
+    const Z = (alpha1 * z1 + alpha2 * z2) / totalAlpha;
+
+    console.log({
       alpha1,
       alpha2,
+      z1,
+      z2,
       beratBerat,
       beratSedang,
       kotorTinggi,
-    );
+      Z,
+    });
+
     return Z.toFixed(2);
   }
 
   const handleHitung = (e) => {
-    e.preventDefault(); // penting biar form gak reload
+    e.preventDefault();
 
     const berat = Number(beratPakaian);
     const kotor = Number(tingkatKotor);
-    console.log(berat, kotor);
-    const hasilPerhitungan = hitungDetergen(berat, kotor);
-    console.log(hasilPerhitungan);
+
+    if (isNaN(berat) || isNaN(kotor)) {
+      alert("Input tidak valid");
+      return;
+    }
+
+    const hasilPerhitungan = hitungDetergen(berat, kotor, cfg);
+
     setHasil(hasilPerhitungan);
   };
 
-  console.log(hasil);
   return (
     <div className="">
       <h1>Perhitungan Detergen</h1>
@@ -147,7 +182,11 @@ export default function PerhitunganDetergenPage() {
           <CardTitle>Detail Proses Fuzzy</CardTitle>
         </CardHeader>
         <CardContent>
-          <AccordionMultiple />
+          <AccordionMultiple
+            cfg={cfg}
+            beratPakaian={beratPakaian}
+            tingkatKotor={tingkatKotor}
+          />
         </CardContent>
         <CardFooter className="grid grid-cols-3 space-x-2 justify-between">
           <Button type="submit">Simpan Hasil Perhitungan</Button>
