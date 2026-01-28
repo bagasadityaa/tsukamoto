@@ -12,104 +12,89 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useState } from "react";
 export default function PerhitunganDetergenPage() {
-  const [beratPakaian, setBeratPakaian] = useState("");
-  const [tingkatKotor, setTingkatKotor] = useState("");
-  const [warnaPakaian, setWarnaPakaian] = useState("");
+  const [warnaKain, setWarnaKain] = useState("");
+  const [ketebalanKain, setKetebalanKain] = useState("");
+  const [beratKain, setBeratKain] = useState("");
+
   const [hasil, setHasil] = useState();
-
-  // ===== konfigurasi (disesuaikan) =====
-  const cfg = {
-    berat: {
-      mid: 5,
-      max: 10,
-    },
-    // ubah mid/max kotor agar nilai kotor = 3 memberikan membership > 0
-    kotor: {
-      mid: 5, // sebelumnya 5
-      max: 10, // sebelumnya 10
-    },
-    deterjen: {
-      min: 20,
-      max: 100,
-    },
-  };
-
-  function muNaik(x, a, b) {
-    if (x <= a) return 0;
-    if (x >= b) return 1;
-    return (x - a) / (b - a);
-  }
-
-  function muTurun(x, a, b) {
-    if (x <= a) return 1;
-    if (x >= b) return 0;
-    return (b - x) / (b - a);
-  }
-
-  function muBerat(x, cfg) {
-    return muNaik(x, cfg.berat.mid, cfg.berat.max);
-  }
-
-  function muSedang(x, cfg) {
-    return muTurun(x, cfg.berat.mid, cfg.berat.max);
-  }
-
-  function muKotorTinggi(x, cfg) {
-    return muNaik(x, cfg.kotor.mid, cfg.kotor.max);
-  }
-
-  function zDeterjen(alpha, cfg) {
-    return cfg.deterjen.min + alpha * (cfg.deterjen.max - cfg.deterjen.min);
-  }
-
-  function hitungDetergen(berat, kotor, cfg) {
-    const beratBerat = muBerat(berat, cfg);
-    const beratSedang = muSedang(berat, cfg);
-    const kotorTinggi = muKotorTinggi(kotor, cfg);
-
-    // Rule 1: IF berat BERAT AND kotor TINGGI
-    const alpha1 = Math.min(beratBerat, kotorTinggi);
-    const z1 = zDeterjen(alpha1, cfg);
-
-    // Rule 2: IF berat SEDANG AND kotor TINGGI
-    const alpha2 = Math.min(beratSedang, kotorTinggi);
-    const z2 = zDeterjen(alpha2, cfg);
-
-    const totalAlpha = alpha1 + alpha2;
-    if (totalAlpha === 0) return cfg.deterjen.min.toFixed(2); // kembalikan min sebagai fallback
-
-    const Z = (alpha1 * z1 + alpha2 * z2) / totalAlpha;
-
-    console.log({
-      alpha1,
-      alpha2,
-      z1,
-      z2,
-      beratBerat,
-      beratSedang,
-      kotorTinggi,
-      Z,
-    });
-
-    return Z.toFixed(2);
-  }
-
-  const handleHitung = (e) => {
-    e.preventDefault();
-
-    const berat = Number(beratPakaian);
-    const kotor = Number(tingkatKotor);
-
-    if (isNaN(berat) || isNaN(kotor)) {
-      alert("Input tidak valid");
-      return;
+  function muGelap(x) {
+    if (x >= 0 && x <= 50) {
+      return (50 - x) / 50;
     }
+    return 0;
+  }
 
-    const hasilPerhitungan = hitungDetergen(berat, kotor, cfg);
+  function muTerang(x) {
+    if (x >= 50 && x <= 100) {
+      return (x - 50) / 50;
+    }
+    return 0;
+  }
 
-    setHasil(hasilPerhitungan);
+  // Deterjen SEDIKIT (20–40 ml, menurun)
+  function zSedikit(alpha) {
+    // (40 - z) / 20 = alpha
+    return 40 - alpha * 20;
+  }
+
+  // Deterjen BANYAK (40–60 ml, menaik)
+  function zBanyak(alpha) {
+    // (z - 40) / 20 = alpha
+    return 40 + alpha * 20;
+  }
+
+  function hitungDeterjen(warna) {
+    // 1. fuzzifikasi
+    const gelap = muGelap(warna);
+    const terang = muTerang(warna);
+
+    // 2. rule
+    const alpha1 = gelap; // R1: GELAP → SEDIKIT
+    const alpha2 = terang; // R2: TERANG → BANYAK
+
+    // 3. nilai z
+    let z1 = 0,
+      z2 = 0;
+
+    if (alpha1 > 0) z1 = zSedikit(alpha1);
+    if (alpha2 > 0) z2 = zBanyak(alpha2);
+
+    // 4. defuzzifikasi
+    const Z = (alpha1 * z1 + alpha2 * z2) / (alpha1 + alpha2 || 1); // biar ga NaN
+
+    return Z;
+  }
+
+  console.log(hitungDeterjen(20)); // warna rendah
+  console.log(hitungDeterjen(50)); // tengah
+  console.log(hitungDeterjen(70)); // tinggi
+
+  const handleHitung = () => {
+    // pastikan angka
+    const warna = Number(warnaKain);
+
+    // 1. fuzzifikasi
+    const gelap = muGelap(warna);
+    const terang = muTerang(warna);
+
+    // 2. rule
+    const alpha1 = gelap; // R1: GELAP → SEDIKIT
+    const alpha2 = terang; // R2: TERANG → BANYAK
+
+    // 3. hitung z
+    let z1 = 0;
+    let z2 = 0;
+
+    if (alpha1 > 0) z1 = zSedikit(alpha1);
+    if (alpha2 > 0) z2 = zBanyak(alpha2);
+
+    // 4. defuzzifikasi
+    const Z = (alpha1 * z1 + alpha2 * z2) / (alpha1 + alpha2 || 1);
+
+    console.log("Hasil deterjen:", Z);
+
+    return Z;
   };
-
   return (
     <div className="">
       <h1>Perhitungan Detergen</h1>
@@ -119,52 +104,65 @@ export default function PerhitunganDetergenPage() {
           <CardTitle>Form Perhitungan Detergen</CardTitle>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleHitung}>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault(); // biar ga reload
+              hitungDeterjen(); // fungsi fuzzy kamu
+            }}
+          >
             <div className="flex flex-col gap-6">
-              <div className="flex">
-                <Label htmlFor="beratPakaian" className="w-fit mr-2">
-                  Berat Pakaian (kg)
+              <div className="flex items-center gap-2">
+                <Label htmlFor="warnaKain" className="w-32">
+                  Warna Kain
                 </Label>
                 <Input
-                  id="beratPakaian"
+                  id="warnaKain"
                   type="number"
-                  value={beratPakaian}
-                  onChange={(e) => setBeratPakaian(e.target.value)}
+                  value={warnaKain}
+                  onChange={(e) => setWarnaKain(Number(e.target.value))}
                   required
                 />
               </div>
 
-              <div className="flex">
-                <Label htmlFor="tingkatKotor" className="w-fit mr-2">
-                  Tingkat Kotor
+              <div className="flex items-center gap-2">
+                <Label htmlFor="ketebalanKain" className="w-32">
+                  Ketebalan Kain
                 </Label>
                 <Input
-                  id="tingkatKotor"
+                  id="ketebalanKain"
                   type="number"
-                  value={tingkatKotor}
-                  onChange={(e) => setTingkatKotor(e.target.value)}
+                  value={ketebalanKain}
+                  onChange={(e) => setKetebalanKain(Number(e.target.value))}
                   required
                 />
               </div>
 
-              <div className="flex">
-                <Label htmlFor="warnaPakaian" className="w-fit mr-2">
-                  Warna Pakaian
+              <div className="flex items-center gap-2">
+                <Label htmlFor="beratKain" className="w-32">
+                  Berat Kain
                 </Label>
                 <Input
-                  id="warnaPakaian"
-                  type="text"
-                  value={warnaPakaian}
-                  onChange={(e) => setWarnaPakaian(e.target.value)}
+                  id="beratKain"
+                  type="number"
+                  value={beratKain}
+                  onChange={(e) => setBeratKain(Number(e.target.value))}
                   required
                 />
               </div>
+
+              {/* BUTTON */}
+              <button
+                type="submit"
+                className="bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition"
+              >
+                Hitung Deterjen
+              </button>
             </div>
           </form>
         </CardContent>
 
         <CardFooter className="flex-col gap-2">
-          <Button type="submit" className="w-full" onClick={handleHitung}>
+          <Button type="submit" className="w-full" onClick={hitungDeterjen}>
             Hitung Takaran Detergen
           </Button>
         </CardFooter>
@@ -183,9 +181,10 @@ export default function PerhitunganDetergenPage() {
         </CardHeader>
         <CardContent>
           <AccordionMultiple
-            cfg={cfg}
-            beratPakaian={beratPakaian}
-            tingkatKotor={tingkatKotor}
+            beratKain={beratKain}
+            ketebalanKain={ketebalanKain}
+            warnaKain={warnaKain}
+            handleHitung={handleHitung}
           />
         </CardContent>
         <CardFooter className="grid grid-cols-3 space-x-2 justify-between">

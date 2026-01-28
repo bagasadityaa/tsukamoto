@@ -7,12 +7,12 @@ import {
 import { TableDemo } from "./table-demo";
 import { BlockMath } from "react-katex";
 
-export function AccordionMultiple({ beratPakaian, tingkatKotor, cfg }) {
-  const nilaBerat =
-    (beratPakaian - cfg.berat.mid) / (cfg.berat.max - cfg.berat.mid);
-
-  const nilaKotor =
-    (tingkatKotor - cfg.kotor.mid) / (cfg.kotor.max - cfg.kotor.mid);
+export function AccordionMultiple({
+  beratkain,
+  ketebalanKain,
+  handleHitung,
+  warnaKain,
+}) {
   const fuzzifikasiTableHead = [
     { label: "Variable", key: "variable" },
     { label: "Himpunan", key: "himpunan" },
@@ -22,17 +22,17 @@ export function AccordionMultiple({ beratPakaian, tingkatKotor, cfg }) {
   const fuzzifikasiTableRow = [
     {
       id: 1,
-      variable: `Berat (${beratPakaian} kg)`,
+      variable: `Berat (11 kg)`,
       himpunan: "Berat",
-      rumus: `μ(${beratPakaian}) = (${beratPakaian} - ${cfg.berat.mid}) / (${cfg.berat.max} - ${cfg.berat.mid})`,
-      nilai: nilaBerat,
+      rumus: `μ(11) = (11 - 5) / (10 - 5)`,
+      nilai: 11,
     },
     {
       id: 2,
-      variable: `Kotor (${tingkatKotor})`,
+      variable: `Kotor (50)`,
       himpunan: "Tinggi",
-      rumus: `μ(${tingkatKotor}) = (${tingkatKotor} - ${cfg.kotor.mid}) / (${cfg.kotor.max} - ${cfg.kotor.mid})`,
-      nilai: nilaKotor,
+      rumus: `μ(50) = (50 - 5) / (10 - 5)`,
+      nilai: 50,
     },
   ];
   const AturanTableHead = [
