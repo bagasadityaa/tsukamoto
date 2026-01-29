@@ -17,83 +17,53 @@ export default function PerhitunganDetergenPage() {
   const [beratKain, setBeratKain] = useState("");
 
   const [hasil, setHasil] = useState();
-  function muGelap(x) {
-    if (x >= 0 && x <= 50) {
-      return (50 - x) / 50;
-    }
-    return 0;
-  }
+  // WARNA (0–100)
+  const muGelap = (x) => (x <= 50 ? (50 - x) / 50 : 0);
+  const muTerang = (x) => (x >= 50 ? (x - 50) / 50 : 0);
 
-  function muTerang(x) {
-    if (x >= 50 && x <= 100) {
-      return (x - 50) / 50;
-    }
-    return 0;
-  }
+  // KETEBALAN (0–10)
+  const muTipis = (x) => (x <= 5 ? (5 - x) / 5 : 0);
+  const muTebal = (x) => (x >= 5 ? (x - 5) / 5 : 0);
 
-  // Deterjen SEDIKIT (20–40 ml, menurun)
-  function zSedikit(alpha) {
-    // (40 - z) / 20 = alpha
-    return 40 - alpha * 20;
-  }
+  // BERAT (0–10)
+  const muRingan = (x) => (x <= 5 ? (5 - x) / 5 : 0);
+  const muBerat = (x) => (x >= 5 ? (x - 5) / 5 : 0);
 
-  // Deterjen BANYAK (40–60 ml, menaik)
-  function zBanyak(alpha) {
-    // (z - 40) / 20 = alpha
-    return 40 + alpha * 20;
-  }
+  const zSedikit = (alpha) => 40 - alpha * 20; // 20–40
+  const zBanyak = (alpha) => 40 + alpha * 20; // 40–60
 
-  function hitungDeterjen(warna) {
+  function hitungDeterjen(warna, ketebalan, berat) {
     // 1. fuzzifikasi
     const gelap = muGelap(warna);
     const terang = muTerang(warna);
 
+    const tipis = muTipis(ketebalan);
+    const tebal = muTebal(ketebalan);
+
+    const ringan = muRingan(berat);
+    const beratK = muBerat(berat);
+
     // 2. rule
-    const alpha1 = gelap; // R1: GELAP → SEDIKIT
-    const alpha2 = terang; // R2: TERANG → BANYAK
+    // R1: GELAP & TIPIS & RINGAN → SEDIKIT
+    const alpha1 = Math.min(gelap, tipis, ringan);
+
+    // R2: TERANG & TEBAL & BERAT → BANYAK
+    const alpha2 = Math.min(terang, tebal, beratK);
 
     // 3. nilai z
-    let z1 = 0,
-      z2 = 0;
-
-    if (alpha1 > 0) z1 = zSedikit(alpha1);
-    if (alpha2 > 0) z2 = zBanyak(alpha2);
-
-    // 4. defuzzifikasi
-    const Z = (alpha1 * z1 + alpha2 * z2) / (alpha1 + alpha2 || 1); // biar ga NaN
-
-    return Z;
-  }
-
-  console.log(hitungDeterjen(20)); // warna rendah
-  console.log(hitungDeterjen(50)); // tengah
-  console.log(hitungDeterjen(70)); // tinggi
-
-  const handleHitung = () => {
-    // pastikan angka
-    const warna = Number(warnaKain);
-
-    // 1. fuzzifikasi
-    const gelap = muGelap(warna);
-    const terang = muTerang(warna);
-
-    // 2. rule
-    const alpha1 = gelap; // R1: GELAP → SEDIKIT
-    const alpha2 = terang; // R2: TERANG → BANYAK
-
-    // 3. hitung z
-    let z1 = 0;
-    let z2 = 0;
-
-    if (alpha1 > 0) z1 = zSedikit(alpha1);
-    if (alpha2 > 0) z2 = zBanyak(alpha2);
+    const z1 = alpha1 > 0 ? zSedikit(alpha1) : 0;
+    const z2 = alpha2 > 0 ? zBanyak(alpha2) : 0;
 
     // 4. defuzzifikasi
     const Z = (alpha1 * z1 + alpha2 * z2) / (alpha1 + alpha2 || 1);
 
-    console.log("Hasil deterjen:", Z);
-
     return Z;
+  }
+  // const hasil = hitungDeterjen(40, 7, 6);
+
+  const handleHitung = () => {
+    const result = hitungDeterjen(warnaKain, ketebalanKain, beratKain);
+    return setHasil(result);
   };
   return (
     <div className="">
@@ -149,27 +119,29 @@ export default function PerhitunganDetergenPage() {
                   required
                 />
               </div>
-
-              {/* BUTTON */}
-              <button
-                type="submit"
-                className="bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition"
-              >
-                Hitung Deterjen
-              </button>
             </div>
           </form>
         </CardContent>
 
         <CardFooter className="flex-col gap-2">
-          <Button type="submit" className="w-full" onClick={hitungDeterjen}>
+          <Button type="submit" className="w-full" onClick={handleHitung}>
             Hitung Takaran Detergen
           </Button>
         </CardFooter>
       </Card>
 
+      <p className="text-sm text-muted-foreground">Warna kain</p>
+
+      <p className="text-2xl font-bold">{warnaKain} ml</p>
+      <p className="text-sm text-muted-foreground">Berat kain</p>
+      <p className="text-2xl font-bold">{beratKain} ml</p>
+      <p className="text-sm text-muted-foreground">Ketebalan kain</p>
+      <p className="text-2xl font-bold">{ketebalanKain} ml</p>
       {hasil && (
         <div className="mt-4 text-center">
+          <p className="text-sm text-muted-foreground">Warna kain</p>
+
+          <p className="text-2xl font-bold">{warnaKain} ml</p>
           <p className="text-sm text-muted-foreground">Takaran Detergen</p>
           <p className="text-2xl font-bold">{hasil} ml</p>
         </div>
