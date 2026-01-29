@@ -15,25 +15,64 @@ export default function PerhitunganDetergenPage() {
   const [warnaKain, setWarnaKain] = useState("");
   const [ketebalanKain, setKetebalanKain] = useState("");
   const [beratKain, setBeratKain] = useState("");
-
   const [hasil, setHasil] = useState();
+
+  const WARNA_MIN = 0;
+  const WARNA_MAX = 100;
+
+  const TEBAL_MIN = 0;
+  const TEBAL_MAX = 10;
+
+  const BERAT_MIN = 1;
+  const BERAT_MAX = 30;
+
+  // output deterjen (ml)
+  const DETERJEN_MIN = 20;
+  const DETERJEN_MAX = 100;
+
   // WARNA (0–100)
-  const muGelap = (x) => (x <= 50 ? (50 - x) / 50 : 0);
-  const muTerang = (x) => (x >= 50 ? (x - 50) / 50 : 0);
+  function muGelap(x) {
+    if (x <= 50) return (50 - x) / 50;
+    if (x < 100) return (x - 50) / 50;
+    return 0;
+  }
 
-  // KETEBALAN (0–10)
-  const muTipis = (x) => (x <= 5 ? (5 - x) / 5 : 0);
-  const muTebal = (x) => (x >= 5 ? (x - 5) / 5 : 0);
+  function muTerang(x) {
+    if (x <= 50) return x / 50;
+    if (x < 100) return (100 - x) / 50;
+    return 0;
+  }
 
-  // BERAT (0–10)
-  const muRingan = (x) => (x <= 5 ? (5 - x) / 5 : 0);
-  const muBerat = (x) => (x >= 5 ? (x - 5) / 5 : 0);
+  function muTipis(x) {
+    if (x <= 5) return (5 - x) / 5;
+    return 0;
+  }
 
-  const zSedikit = (alpha) => 40 - alpha * 20; // 20–40
-  const zBanyak = (alpha) => 40 + alpha * 20; // 40–60
+  function muTebal(x) {
+    if (x >= 5) return (x - 5) / 5;
+    return 0;
+  }
+
+  function muRingan(x) {
+    if (x <= 15) return (15 - x) / 14;
+    return 0;
+  }
+
+  function muBerat(x) {
+    if (x >= 15) return (x - 15) / 15;
+    return 0;
+  }
+
+  function zSedikit(alpha) {
+    return DETERJEN_MAX - alpha * (DETERJEN_MAX - DETERJEN_MIN);
+  }
+
+  function zBanyak(alpha) {
+    return DETERJEN_MIN + alpha * (DETERJEN_MAX - DETERJEN_MIN);
+  }
 
   function hitungDeterjen(warna, ketebalan, berat) {
-    // 1. fuzzifikasi
+    // fuzzifikasi
     const gelap = muGelap(warna);
     const terang = muTerang(warna);
 
@@ -43,22 +82,37 @@ export default function PerhitunganDetergenPage() {
     const ringan = muRingan(berat);
     const beratK = muBerat(berat);
 
-    // 2. rule
-    // R1: GELAP & TIPIS & RINGAN → SEDIKIT
-    const alpha1 = Math.min(gelap, tipis, ringan);
+    // rule
+    const rules = [
+      { alpha: Math.min(gelap, tipis, ringan), z: "sedikit" },
+      { alpha: Math.min(gelap, tebal, ringan), z: "sedikit" },
+      { alpha: Math.min(gelap, tipis, beratK), z: "banyak" },
+      { alpha: Math.min(gelap, tebal, beratK), z: "banyak" },
 
-    // R2: TERANG & TEBAL & BERAT → BANYAK
-    const alpha2 = Math.min(terang, tebal, beratK);
+      { alpha: Math.min(terang, tipis, ringan), z: "sedikit" },
+      { alpha: Math.min(terang, tebal, ringan), z: "banyak" },
+      { alpha: Math.min(terang, tipis, beratK), z: "banyak" },
+      { alpha: Math.min(terang, tebal, beratK), z: "banyak" },
+    ];
 
-    // 3. nilai z
-    const z1 = alpha1 > 0 ? zSedikit(alpha1) : 0;
-    const z2 = alpha2 > 0 ? zBanyak(alpha2) : 0;
+    // defuzzifikasi
+    let atas = 0;
+    let bawah = 0;
 
-    // 4. defuzzifikasi
-    const Z = (alpha1 * z1 + alpha2 * z2) / (alpha1 + alpha2 || 1);
+    rules.forEach((r) => {
+      if (r.alpha > 0) {
+        const z = r.z === "sedikit" ? zSedikit(r.alpha) : zBanyak(r.alpha);
 
-    return Z;
+        atas += r.alpha * z;
+        bawah += r.alpha;
+      }
+    });
+
+    if (bawah === 0) return 0;
+
+    return (atas / bawah).toFixed(2);
   }
+
   // const hasil = hitungDeterjen(40, 7, 6);
 
   const handleHitung = () => {
@@ -85,39 +139,57 @@ export default function PerhitunganDetergenPage() {
                 <Label htmlFor="warnaKain" className="w-32">
                   Warna Kain
                 </Label>
-                <Input
-                  id="warnaKain"
-                  type="number"
-                  value={warnaKain}
-                  onChange={(e) => setWarnaKain(Number(e.target.value))}
-                  required
-                />
+                <div className="flex flex-col w-full">
+                  <Input
+                    id="warnaKain"
+                    type="number"
+                    value={warnaKain}
+                    max={WARNA_MAX}
+                    onChange={(e) => setWarnaKain(Number(e.target.value))}
+                    required
+                  />
+                  <p className="text-sm text-muted-foreground">
+                    Max: {WARNA_MAX}
+                  </p>
+                </div>
               </div>
 
               <div className="flex items-center gap-2">
                 <Label htmlFor="ketebalanKain" className="w-32">
                   Ketebalan Kain
                 </Label>
-                <Input
-                  id="ketebalanKain"
-                  type="number"
-                  value={ketebalanKain}
-                  onChange={(e) => setKetebalanKain(Number(e.target.value))}
-                  required
-                />
+                <div className="flex w-full flex-col">
+                  <Input
+                    id="ketebalanKain"
+                    type="number"
+                    value={ketebalanKain}
+                    onChange={(e) => setKetebalanKain(Number(e.target.value))}
+                    required
+                    max={TEBAL_MAX}
+                  />
+                  <p className="text-sm text-muted-foreground">
+                    Max: {TEBAL_MAX}
+                  </p>
+                </div>
               </div>
 
               <div className="flex items-center gap-2">
                 <Label htmlFor="beratKain" className="w-32">
                   Berat Kain
                 </Label>
-                <Input
-                  id="beratKain"
-                  type="number"
-                  value={beratKain}
-                  onChange={(e) => setBeratKain(Number(e.target.value))}
-                  required
-                />
+                <div className="flex w-full flex-col">
+                  <Input
+                    id="beratKain"
+                    type="number"
+                    value={beratKain}
+                    onChange={(e) => setBeratKain(Number(e.target.value))}
+                    required
+                    max={BERAT_MAX}
+                  />
+                  <p className="text-sm text-muted-foreground">
+                    Max: {BERAT_MAX}
+                  </p>
+                </div>
               </div>
             </div>
           </form>
