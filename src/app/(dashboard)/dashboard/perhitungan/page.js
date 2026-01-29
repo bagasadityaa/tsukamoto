@@ -68,7 +68,7 @@ export default function PerhitunganDetergenPage() {
   return (
     <div className="">
       <h1>Perhitungan Detergen</h1>
-      <marquee className="text-9xl h-screen">BIlal Ganteng</marquee>
+
       <Card className="w-full my-2">
         <CardHeader>
           <CardTitle>Form Perhitungan Detergen</CardTitle>
