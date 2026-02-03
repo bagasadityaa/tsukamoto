@@ -10,126 +10,35 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useState } from "react";
+import usePerhitungan from "@/lib/perhitunganDetergen";
 export default function PerhitunganDetergenPage() {
-  const [warnaKain, setWarnaKain] = useState("");
-  const [ketebalanKain, setKetebalanKain] = useState("");
-  const [beratKain, setBeratKain] = useState("");
-  const [hasil, setHasil] = useState();
-
-  const WARNA_MIN = 0;
-  const WARNA_MAX = 10;
-
-  const TEBAL_MIN = 0;
-  const TEBAL_MAX = 10;
-
-  const BERAT_MIN = 1;
-  const BERAT_MAX = 30;
-
-  // Konstanta Output
-  const DETERJEN_MIN = 20;
-  const DETERJEN_MAX = 100;
-
-  // 1. FUZZIFIKASI (Gunakan fungsi monoton yang konsisten)
-  function muGelap(x) {
-    if (x <= 0) return 1;
-    if (x >= 10) return 0;
-    return (10 - x) / 10; // Turun dari 1 ke 0
-  }
-
-  console.log(muGelap(6));
-
-  function muTerang(x) {
-    if (x <= 0) return 0;
-    if (x >= 10) return 1;
-    return x / 10; // Naik dari 0 ke 1
-  }
-
-  console.log(muTerang(6));
-
-  function muTipis(x) {
-    if (x <= 0) return 1;
-    if (x >= 10) return 0;
-    return (10 - x) / 10;
-  }
-
-  function muTebal(x) {
-    if (x <= 0) return 0;
-    if (x >= 10) return 1;
-    return x / 10;
-  }
-
-  function muRingan(x) {
-    if (x <= 0) return 1;
-    if (x >= 30) return 0; // Sesuaikan dengan skala berat Anda (0-30)
-    return (30 - x) / 30;
-  }
-
-  function muBerat(x) {
-    if (x <= 0) return 0;
-    if (x >= 30) return 1;
-    return x / 30;
-  }
-
-  console.log(muBerat(25));
-
-  // 2. INFERENSI (Output Z)
-  function zSedikit(alpha) {
-    return DETERJEN_MAX - alpha * (DETERJEN_MAX - DETERJEN_MIN);
-  }
-
-  function zBanyak(alpha) {
-    return DETERJEN_MIN + alpha * (DETERJEN_MAX - DETERJEN_MIN);
-  }
-
-  function hitungDeterjen(warna, ketebalan, berat) {
-    const gelap = muGelap(warna);
-    const terang = muTerang(warna);
-    const tipis = muTipis(ketebalan);
-    const tebal = muTebal(ketebalan);
-    const ringan = muRingan(berat);
-    const beratK = muBerat(berat);
-
-    const rules = [
-      { alpha: Math.min(gelap, tipis, ringan), zType: "sedikit" },
-      { alpha: Math.min(gelap, tebal, ringan), zType: "sedikit" },
-      { alpha: Math.min(gelap, tipis, beratK), zType: "banyak" },
-      { alpha: Math.min(gelap, tebal, beratK), zType: "banyak" },
-      { alpha: Math.min(terang, tipis, ringan), zType: "sedikit" },
-      { alpha: Math.min(terang, tebal, ringan), zType: "banyak" },
-      { alpha: Math.min(terang, tipis, beratK), zType: "banyak" },
-      { alpha: Math.min(terang, tebal, beratK), zType: "banyak" },
-    ];
-
-    // 3. DEFUZZIFIKASI
-    let atas = 0;
-    let bawah = 0;
-
-    rules.forEach((r) => {
-      if (r.alpha > 0) {
-        const z = r.zType === "sedikit" ? zSedikit(r.alpha) : zBanyak(r.alpha);
-        atas += r.alpha * z;
-        bawah += r.alpha;
+  const {
+    warnaKain,
+    ketebalanKain,
+    beratKain,
+    hasil,
+    setWarnaKain,
+    setKetebalanKain,
+    setBeratKain,
+    handleHitung,
+    WARNA_MAX,
+    TEBAL_MAX,
+    BERAT_MAX,
+    rules,
+  } = usePerhitungan();
+  console.log(
+    "rules map page",
+    rules.map((r) => {
+      if (r.alpha > 0.01) {
+        return `${r.name}`;
       }
-    });
+    }),
+  );
+  console.log(
+    "Rules page:",
+    rules.map((r) => r),
+  );
 
-    return bawah === 0 ? 0 : (atas / bawah).toFixed(2);
-  }
-
-  // const hasil = hitungDeterjen(40, 7, 6);
-
-  const handleHitung = () => {
-    // Pastikan input dikonversi ke Number agar perhitungan matematikanya aman
-    const warna = Number(warnaKain);
-    const tebal = Number(ketebalanKain);
-    const berat = Number(beratKain);
-
-    // Jalankan fungsi logika Tsukamoto yang tadi kita buat
-    const result = hitungDeterjen(warna, tebal, berat);
-
-    // Simpan ke state untuk ditampilkan di UI
-    setHasil(result);
-  };
   return (
     <div className="">
       <h1>Perhitungan Detergen</h1>
@@ -236,7 +145,8 @@ export default function PerhitunganDetergenPage() {
         </CardHeader>
         <CardContent>
           <AccordionMultiple
-            beratKain={beratKain}
+            rules={rules}
+            beratkain={beratKain}
             ketebalanKain={ketebalanKain}
             warnaKain={warnaKain}
             handleHitung={handleHitung}
