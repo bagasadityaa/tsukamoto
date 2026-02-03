@@ -16,16 +16,6 @@ export function AccordionMultiple({
   handleHitung,
   warnaKain,
 }) {
-  // const { rules, hasil } = usePerhitungan();
-  console.log(
-    "rules map cc",
-    rules.map((r) => {
-      if (r.alpha > 0.01) {
-        return `${r.name}`;
-      }
-    }),
-  );
-
   // --- Tabel Fuzzifikasi ---
   const fuzzifikasiTableHead = [
     { label: "Variable", key: "variable" },
