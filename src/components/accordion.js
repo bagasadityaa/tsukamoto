@@ -103,15 +103,6 @@ export function AccordionMultiple({
       className="w-full"
       defaultValue={["notifications"]}
     >
-      <AccordionItem key="Informasi" value="Informasi">
-        <AccordionTrigger>Informasi</AccordionTrigger>
-        <AccordionContent>
-          <TableDemo
-            tableHead={informasiTableHead}
-            tableRow={informasiTableRow}
-          />
-        </AccordionContent>
-      </AccordionItem>
       <AccordionItem key="Fuzzifikasi" value="Fuzzifikasi">
         <AccordionTrigger>Fuzzifikasi</AccordionTrigger>
         <AccordionContent>

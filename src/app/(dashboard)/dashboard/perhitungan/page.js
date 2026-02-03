@@ -26,18 +26,6 @@ export default function PerhitunganDetergenPage() {
     BERAT_MAX,
     rules,
   } = usePerhitungan();
-  console.log(
-    "rules map page",
-    rules.map((r) => {
-      if (r.alpha > 0.01) {
-        return `${r.name}`;
-      }
-    }),
-  );
-  console.log(
-    "Rules page:",
-    rules.map((r) => r),
-  );
 
   return (
     <div className="">
