@@ -13,42 +13,71 @@ export function AccordionMultiple({
   handleHitung,
   warnaKain,
 }) {
+  // --- Tabel Fuzzifikasi ---
   const fuzzifikasiTableHead = [
     { label: "Variable", key: "variable" },
     { label: "Himpunan", key: "himpunan" },
     { label: "Rumus", key: "rumus" },
-    { label: "Nilai", key: "nilai" },
+    { label: "Derajat Keanggotaan (μ)", key: "nilai" },
   ];
+
   const fuzzifikasiTableRow = [
     {
       id: 1,
-      variable: `Berat (11 kg)`,
-      himpunan: "Berat",
-      rumus: `μ(11) = (11 - 5) / (10 - 5)`,
-      nilai: 11,
+      variable: "Warna (60)",
+      himpunan: "Terang",
+      rumus: "μTerang(60) = (60 - 0) / (100 - 0)",
+      nilai: "0.60",
     },
     {
       id: 2,
-      variable: `Kotor (50)`,
-      himpunan: "Tinggi",
-      rumus: `μ(50) = (50 - 5) / (10 - 5)`,
-      nilai: 50,
+      variable: "Ketebalan (6)",
+      himpunan: "Tebal",
+      rumus: "μTebal(6) = (6 - 0) / (10 - 0)",
+      nilai: "0.60",
+    },
+    {
+      id: 3,
+      variable: "Berat (25)",
+      himpunan: "Berat",
+      rumus: "μBerat(25) = (25 - 0) / (30 - 0)",
+      nilai: "0.83",
     },
   ];
+
+  // --- Tabel Aturan (Rule Evaluation) ---
   const AturanTableHead = [
     { label: "Rule", key: "rule" },
     { label: "Kondisi", key: "kondisi" },
-    { label: "α", key: "a" },
+    { label: "α-Predikat (Min)", key: "a" },
   ];
+
   const AturanTableRow = [
-    { id: 1, rule: "R1", kondisi: "BErat A Kotor Tinggi", a: "0.33" },
+    {
+      id: 1,
+      rule: "R8",
+      kondisi: "Terang(0.6) AND Tebal(0.6) AND Berat(0.83)",
+      a: "min(0.6, 0.6, 0.83) = 0.60",
+    },
   ];
+
+  // --- Tabel Nilai Z (Inference) ---
   const NilaiZTableHead = [
     { label: "Rule", key: "rulez" },
-    { label: "Output", key: "output" },
-    { label: "z (ml)", key: "z" },
+    { label: "Kategori Output", key: "output" },
+    { label: "Rumus Z", key: "rumus_z" },
+    { label: "Hasil z (ml)", key: "z" },
   ];
-  const NilaiZTableRow = [{ id: 1, rulez: "R1", output: "Banyak", z: "79.9" }];
+
+  const NilaiZTableRow = [
+    {
+      id: 1,
+      rulez: "R8",
+      output: "Banyak",
+      rumus_z: "20 + 0.6(100 - 20)",
+      z: "68.00",
+    },
+  ];
   return (
     <Accordion
       type="multiple"

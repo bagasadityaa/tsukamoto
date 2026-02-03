@@ -18,7 +18,7 @@ export default function PerhitunganDetergenPage() {
   const [hasil, setHasil] = useState();
 
   const WARNA_MIN = 0;
-  const WARNA_MAX = 100;
+  const WARNA_MAX = 10;
 
   const TEBAL_MIN = 0;
   const TEBAL_MAX = 10;
@@ -26,43 +26,54 @@ export default function PerhitunganDetergenPage() {
   const BERAT_MIN = 1;
   const BERAT_MAX = 30;
 
-  // output deterjen (ml)
+  // Konstanta Output
   const DETERJEN_MIN = 20;
   const DETERJEN_MAX = 100;
 
-  // WARNA (0–100)
+  // 1. FUZZIFIKASI (Gunakan fungsi monoton yang konsisten)
   function muGelap(x) {
-    if (x <= 50) return (50 - x) / 50;
-    if (x < 100) return (x - 50) / 50;
-    return 0;
+    if (x <= 0) return 1;
+    if (x >= 10) return 0;
+    return (10 - x) / 10; // Turun dari 1 ke 0
   }
+
+  console.log(muGelap(6));
 
   function muTerang(x) {
-    if (x <= 50) return x / 50;
-    if (x < 100) return (100 - x) / 50;
-    return 0;
+    if (x <= 0) return 0;
+    if (x >= 10) return 1;
+    return x / 10; // Naik dari 0 ke 1
   }
 
+  console.log(muTerang(6));
+
   function muTipis(x) {
-    if (x <= 5) return (5 - x) / 5;
-    return 0;
+    if (x <= 0) return 1;
+    if (x >= 10) return 0;
+    return (10 - x) / 10;
   }
 
   function muTebal(x) {
-    if (x >= 5) return (x - 5) / 5;
-    return 0;
+    if (x <= 0) return 0;
+    if (x >= 10) return 1;
+    return x / 10;
   }
 
   function muRingan(x) {
-    if (x <= 15) return (15 - x) / 14;
-    return 0;
+    if (x <= 0) return 1;
+    if (x >= 30) return 0; // Sesuaikan dengan skala berat Anda (0-30)
+    return (30 - x) / 30;
   }
 
   function muBerat(x) {
-    if (x >= 15) return (x - 15) / 15;
-    return 0;
+    if (x <= 0) return 0;
+    if (x >= 30) return 1;
+    return x / 30;
   }
 
+  console.log(muBerat(25));
+
+  // 2. INFERENSI (Output Z)
   function zSedikit(alpha) {
     return DETERJEN_MAX - alpha * (DETERJEN_MAX - DETERJEN_MIN);
   }
@@ -72,52 +83,52 @@ export default function PerhitunganDetergenPage() {
   }
 
   function hitungDeterjen(warna, ketebalan, berat) {
-    // fuzzifikasi
     const gelap = muGelap(warna);
     const terang = muTerang(warna);
-
     const tipis = muTipis(ketebalan);
     const tebal = muTebal(ketebalan);
-
     const ringan = muRingan(berat);
     const beratK = muBerat(berat);
 
-    // rule
     const rules = [
-      { alpha: Math.min(gelap, tipis, ringan), z: "sedikit" },
-      { alpha: Math.min(gelap, tebal, ringan), z: "sedikit" },
-      { alpha: Math.min(gelap, tipis, beratK), z: "banyak" },
-      { alpha: Math.min(gelap, tebal, beratK), z: "banyak" },
-
-      { alpha: Math.min(terang, tipis, ringan), z: "sedikit" },
-      { alpha: Math.min(terang, tebal, ringan), z: "banyak" },
-      { alpha: Math.min(terang, tipis, beratK), z: "banyak" },
-      { alpha: Math.min(terang, tebal, beratK), z: "banyak" },
+      { alpha: Math.min(gelap, tipis, ringan), zType: "sedikit" },
+      { alpha: Math.min(gelap, tebal, ringan), zType: "sedikit" },
+      { alpha: Math.min(gelap, tipis, beratK), zType: "banyak" },
+      { alpha: Math.min(gelap, tebal, beratK), zType: "banyak" },
+      { alpha: Math.min(terang, tipis, ringan), zType: "sedikit" },
+      { alpha: Math.min(terang, tebal, ringan), zType: "banyak" },
+      { alpha: Math.min(terang, tipis, beratK), zType: "banyak" },
+      { alpha: Math.min(terang, tebal, beratK), zType: "banyak" },
     ];
 
-    // defuzzifikasi
+    // 3. DEFUZZIFIKASI
     let atas = 0;
     let bawah = 0;
 
     rules.forEach((r) => {
       if (r.alpha > 0) {
-        const z = r.z === "sedikit" ? zSedikit(r.alpha) : zBanyak(r.alpha);
-
+        const z = r.zType === "sedikit" ? zSedikit(r.alpha) : zBanyak(r.alpha);
         atas += r.alpha * z;
         bawah += r.alpha;
       }
     });
 
-    if (bawah === 0) return 0;
-
-    return (atas / bawah).toFixed(2);
+    return bawah === 0 ? 0 : (atas / bawah).toFixed(2);
   }
 
   // const hasil = hitungDeterjen(40, 7, 6);
 
   const handleHitung = () => {
-    const result = hitungDeterjen(warnaKain, ketebalanKain, beratKain);
-    return setHasil(result);
+    // Pastikan input dikonversi ke Number agar perhitungan matematikanya aman
+    const warna = Number(warnaKain);
+    const tebal = Number(ketebalanKain);
+    const berat = Number(beratKain);
+
+    // Jalankan fungsi logika Tsukamoto yang tadi kita buat
+    const result = hitungDeterjen(warna, tebal, berat);
+
+    // Simpan ke state untuk ditampilkan di UI
+    setHasil(result);
   };
   return (
     <div className="">
