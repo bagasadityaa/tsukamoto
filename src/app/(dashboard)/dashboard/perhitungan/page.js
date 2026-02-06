@@ -110,46 +110,37 @@ export default function PerhitunganDetergenPage() {
         </CardFooter>
       </Card>
 
-      <p className="text-sm text-muted-foreground">Warna kain</p>
-
-      <p className="text-2xl font-bold">{warnaKain} ml</p>
-      <p className="text-sm text-muted-foreground">Berat kain</p>
-      <p className="text-2xl font-bold">{beratKain} ml</p>
-      <p className="text-sm text-muted-foreground">Ketebalan kain</p>
-      <p className="text-2xl font-bold">{ketebalanKain} ml</p>
       {hasil && (
         <div className="mt-4 text-center">
-          <p className="text-sm text-muted-foreground">Warna kain</p>
-
-          <p className="text-2xl font-bold">{warnaKain} ml</p>
           <p className="text-sm text-muted-foreground">Takaran Detergen</p>
           <p className="text-2xl font-bold">{hasil} ml</p>
         </div>
       )}
-
-      <Card className="w-full my-2">
-        <CardHeader>
-          <CardTitle>Detail Proses Fuzzy</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <AccordionMultiple
-            rules={rules}
-            beratkain={beratKain}
-            ketebalanKain={ketebalanKain}
-            warnaKain={warnaKain}
-            handleHitung={handleHitung}
-          />
-        </CardContent>
-        <CardFooter className="grid grid-cols-3 space-x-2 justify-between">
-          <Button type="submit">Simpan Hasil Perhitungan</Button>
-          <Button type="submit" variant="secondary">
-            Reset
-          </Button>
-          <Button type="submit" variant="outline">
-            Lihat Riwayat
-          </Button>
-        </CardFooter>
-      </Card>
+      {hasil === null ? null : (
+        <Card className="w-full my-2">
+          <CardHeader>
+            <CardTitle>Detail Proses Fuzzy</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <AccordionMultiple
+              rules={rules}
+              beratkain={beratKain}
+              ketebalanKain={ketebalanKain}
+              warnaKain={warnaKain}
+              handleHitung={handleHitung}
+            />
+          </CardContent>
+          <CardFooter className="grid grid-cols-3 space-x-2 justify-between">
+            <Button type="submit">Simpan Hasil Perhitungan</Button>
+            <Button type="submit" variant="secondary">
+              Reset
+            </Button>
+            <Button type="submit" variant="outline">
+              Lihat Riwayat
+            </Button>
+          </CardFooter>
+        </Card>
+      )}
     </div>
   );
 }

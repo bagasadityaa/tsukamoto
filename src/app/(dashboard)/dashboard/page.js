@@ -4,18 +4,9 @@ import { TableDemo } from "@/components/table-demo";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/hooks/useAuth";
 import { logout } from "@/lib/auth";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
 
 export default function DashboardPage() {
-  const { user, loading } = useAuth();
-
-  const router = useRouter();
-  useEffect(() => {
-    if (!loading && !user) {
-      router.push("/login");
-    }
-  }, [user, loading]);
+  const { user } = useAuth();
 
   return (
     <div>

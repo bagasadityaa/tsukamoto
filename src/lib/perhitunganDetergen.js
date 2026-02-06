@@ -22,39 +22,28 @@ export default function usePerhitungan() {
   // ===== fungsi keanggotaan =====
   // WARNA (0..10) - crossover 5
   const muGelap = (x) => {
-    if (x <= 5) return (5 - x) / 5;
-    return 0;
+    return (10 - x) / 10;
   };
   const muTerang = (x) => {
-    if (x >= 5) return (x - 5) / 5;
-    return 0;
+    return x / 10;
   };
 
   const muTipis = muGelap;
   const muTebal = muTerang;
 
   const muRingan = (x) => {
-    if (x <= 15) return Math.max(0, (15 - x) / 14); // contoh pembagian
-    return 0;
+    return (30 - x) / 30;
   };
   const muBerat = (x) => {
-    if (x >= 15) return Math.max(0, (x - 15) / 15);
-    return 0;
+    return x / 30;
   };
 
-  // ===== fungsi output Tsukamoto (monoton) =====
-  const zSedikit = (alpha) => {
-    return 50 - alpha * 30;
-  };
-
-  const zBanyak = (alpha) => {
-    // contoh: banyak di range 40..100 (atau sesuai kebutuhan)
-    // lebih sederhana: linear antara min..max
-    return 60 + alpha * (DETERJEN_MAX - 60);
-  };
+  const zSedikit = (alpha) =>
+    DETERJEN_MAX - (DETERJEN_MAX - DETERJEN_MIN) * alpha;
+  const zBanyak = (alpha) =>
+    DETERJEN_MIN + (DETERJEN_MAX - DETERJEN_MIN) * alpha;
 
   function hitungDeterjen(warna, ketebalan, berat) {
-    // pastikan angka
     const w = Number(warna);
     const k = Number(ketebalan);
     const b = Number(berat);
@@ -67,55 +56,49 @@ export default function usePerhitungan() {
     const ringan = muRingan(b);
     const beratK = muBerat(b);
 
-    // rules (alpha dan tipe z)
     const rulesRaw = [
-      { name: "R1", alpha: Math.min(gelap, tipis, ringan), zType: "sedikit" },
-      { name: "R2", alpha: Math.min(gelap, tebal, ringan), zType: "sedikit" },
-      { name: "R3", alpha: Math.min(gelap, tipis, beratK), zType: "banyak" },
-      { name: "R4", alpha: Math.min(gelap, tebal, beratK), zType: "banyak" },
-      { name: "R5", alpha: Math.min(terang, tipis, ringan), zType: "sedikit" },
-      { name: "R6", alpha: Math.min(terang, tebal, ringan), zType: "banyak" },
-      { name: "R7", alpha: Math.min(terang, tipis, beratK), zType: "banyak" },
-      { name: "R8", alpha: Math.min(terang, tebal, beratK), zType: "banyak" },
+      { name: "R1", alpha: Math.min(tebal, beratK), zType: "banyak" },
+      { name: "R2", alpha: Math.min(tipis, ringan), zType: "sedikit" },
+      { name: "R3", alpha: Math.min(gelap, beratK), zType: "banyak" },
+      { name: "R4", alpha: Math.min(terang, ringan), zType: "sedikit" },
     ];
 
-    // defuzzifikasi: hitung z per rule dan akumulasi
     let atas = 0;
     let bawah = 0;
-    const ruleDetail = []; // kumpulan rule dengan nilai z
+    const ruleDetail = [];
+
     rulesRaw.forEach((r) => {
+      const alpha = Number(r.alpha) || 0;
+
       let z = 0;
-
-      if (r.alpha > 0) {
-        z = r.zType === "sedikit" ? zSedikit(r.alpha) : zBanyak(r.alpha);
-
-        atas += r.alpha * z;
-        bawah += r.alpha;
+      if (alpha > 0) {
+        z = r.zType === "sedikit" ? zSedikit(alpha) : zBanyak(alpha);
+        atas += alpha * z;
+        bawah += alpha;
       }
 
-      ruleDetail.push({ ...r, z });
+      ruleDetail.push({ ...r, alpha, z: +z.toFixed(2) });
     });
 
-    const hasilValue = bawah === 0 ? 0 : Number((atas / bawah).toFixed(2));
-
-    // return lengkap (bisa dipakai langsung)
+    const hasilValue = bawah === 0 ? 0 : +(atas / bawah).toFixed(2);
 
     return {
       hasil: hasilValue,
-      rulesRaw,
       rules: ruleDetail,
+
       fuzzifikasi: { gelap, terang, tipis, tebal, ringan, beratK },
     };
   }
-  console.log("Rules with Z:", rules);
 
   // ===== handleHitung: memanggil hitungDeterjen dan menyimpan ke state =====
   const handleHitung = () => {
     const data = hitungDeterjen(warnaKain, ketebalanKain, beratKain);
+
     setHasil(data.hasil);
     setRules(data.rules);
     setFuzzifikasi(data.fuzzifikasi);
-    return data; // opsional: kembalikan untuk immediate use
+
+    console.log("Rules with Z:", data.rules);
   };
 
   // return hook API — semua yang perlu diakses page
