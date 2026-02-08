@@ -10,8 +10,12 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { db } from "@/lib/firebase";
 import usePerhitungan from "@/lib/perhitunganDetergen";
+import { addDoc, collection } from "firebase/firestore";
+import { useState } from "react";
 export default function PerhitunganDetergenPage() {
+  const [data, setData] = useState([]);
   const {
     warnaKain,
     ketebalanKain,
@@ -27,6 +31,24 @@ export default function PerhitunganDetergenPage() {
     rules,
   } = usePerhitungan();
 
+  const handleSimpan = async () => {
+    try {
+      const docRef = await addDoc(collection(db, "data"), {
+        rules: rules || [],
+        createdAt: new Date(),
+      });
+
+      // kalau mau simpan ID ke state
+      setData({
+        id: docRef.id,
+        rules: rules || [],
+      });
+    } catch (err) {
+      console.error("Error adding document:", err);
+    }
+  };
+
+  console.log("data", data);
   return (
     <div className="">
       <h1>Perhitungan Detergen</h1>
@@ -131,7 +153,9 @@ export default function PerhitunganDetergenPage() {
             />
           </CardContent>
           <CardFooter className="grid grid-cols-3 space-x-2 justify-between">
-            <Button type="submit">Simpan Hasil Perhitungan</Button>
+            <Button onClick={handleSimpan} type="submit">
+              Simpan Hasil Perhitungan
+            </Button>
             <Button type="submit" variant="secondary">
               Reset
             </Button>

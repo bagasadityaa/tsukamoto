@@ -37,7 +37,7 @@ export default function usePerhitungan() {
   const muBerat = (x) => {
     return x / 30;
   };
-
+  let rulesMinn = [];
   const zSedikit = (alpha) =>
     DETERJEN_MAX - (DETERJEN_MAX - DETERJEN_MIN) * alpha;
   const zBanyak = (alpha) =>
@@ -67,6 +67,14 @@ export default function usePerhitungan() {
     let bawah = 0;
     const ruleDetail = [];
 
+    const rulesMin = [
+      { name: "R1", alpha: [tebal, beratK], zType: "banyak" },
+      { name: "R2", alpha: [tipis, ringan], zType: "sedikit" },
+      { name: "R3", alpha: [gelap, beratK], zType: "banyak" },
+      { name: "R4", alpha: [terang, ringan], zType: "sedikit" },
+    ];
+    rulesMinn = rulesMin;
+
     rulesRaw.forEach((r) => {
       const alpha = Number(r.alpha) || 0;
 
@@ -85,10 +93,12 @@ export default function usePerhitungan() {
     return {
       hasil: hasilValue,
       rules: ruleDetail,
-
+      rulesMin,
       fuzzifikasi: { gelap, terang, tipis, tebal, ringan, beratK },
     };
   }
+
+  console.log("rulesMinn", rules);
 
   // ===== handleHitung: memanggil hitungDeterjen dan menyimpan ke state =====
   const handleHitung = () => {
@@ -97,8 +107,6 @@ export default function usePerhitungan() {
     setHasil(data.hasil);
     setRules(data.rules);
     setFuzzifikasi(data.fuzzifikasi);
-
-    console.log("Rules with Z:", data.rules);
   };
 
   // return hook API — semua yang perlu diakses page
