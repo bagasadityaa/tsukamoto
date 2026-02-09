@@ -13,9 +13,12 @@ import { Label } from "@/components/ui/label";
 import { db } from "@/lib/firebase";
 import usePerhitungan from "@/lib/perhitunganDetergen";
 import { addDoc, collection } from "firebase/firestore";
+import { useRouter } from "next/navigation";
+
 import { useState } from "react";
 export default function PerhitunganDetergenPage() {
   const [data, setData] = useState([]);
+  const router = useRouter();
   const {
     warnaKain,
     ketebalanKain,
@@ -35,6 +38,10 @@ export default function PerhitunganDetergenPage() {
     try {
       const docRef = await addDoc(collection(db, "data"), {
         rules: rules || [],
+        hasil: hasil || 0,
+        beratKain,
+        ketebalanKain,
+        warnaKain,
         createdAt: new Date(),
       });
 
@@ -43,6 +50,7 @@ export default function PerhitunganDetergenPage() {
         id: docRef.id,
         rules: rules || [],
       });
+      alert("data berhasil disimpan!");
     } catch (err) {
       console.error("Error adding document:", err);
     }
@@ -154,12 +162,15 @@ export default function PerhitunganDetergenPage() {
           </CardContent>
           <CardFooter className="grid grid-cols-3 space-x-2 justify-between">
             <Button onClick={handleSimpan} type="submit">
-              Simpan Hasil Perhitungan
+              Simpan
             </Button>
             <Button type="submit" variant="secondary">
               Reset
             </Button>
-            <Button type="submit" variant="outline">
+            <Button
+              onClick={() => router.push("/dashboard/riwayat")}
+              variant="outline"
+            >
               Lihat Riwayat
             </Button>
           </CardFooter>
