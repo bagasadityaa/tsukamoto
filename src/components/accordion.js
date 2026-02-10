@@ -15,6 +15,7 @@ export function AccordionMultiple({
   ketebalanKain,
   handleHitung,
   warnaKain,
+  hasil,
 }) {
   // --- Tabel Fuzzifikasi ---
   const { rulesMinGlobal } = usePerhitungan();
@@ -144,11 +145,7 @@ export function AccordionMultiple({
         }
       }),
       rumus_z: "20 + 0.6(100 - 20)",
-      z: rules.map((r) => {
-        if (r.alpha > 0.01) {
-          return `${r.z}`;
-        }
-      }),
+      z: `${hasil} ml`,
     },
   ];
   return (
@@ -189,18 +186,18 @@ export function AccordionMultiple({
           <TableDemo tableHead={RuleTableHead} tableRow={RuleTableRow} />
         </AccordionContent>
       </AccordionItem>
-      <AccordionItem key="Aturan" value="Aturan">
+      {/* <AccordionItem key="Aturan" value="Aturan">
         <AccordionTrigger>Aturan & Nilai a</AccordionTrigger>
         <AccordionContent>
           <TableDemo tableHead={AturanTableHead} tableRow={AturanTableRow} />
         </AccordionContent>
-      </AccordionItem>
-      <AccordionItem key="Nilai" value="Nilai">
+      </AccordionItem> */}
+      {/* <AccordionItem key="Nilai" value="Nilai">
         <AccordionTrigger>Nilai z</AccordionTrigger>
         <AccordionContent>
           <TableDemo tableHead={NilaiZTableHead} tableRow={NilaiZTableRow} />
         </AccordionContent>
-      </AccordionItem>
+      </AccordionItem> */}
       <AccordionItem key="Defuzzifikasi" value="Defuzzifikasi">
         <AccordionTrigger>Defuzzifikasi</AccordionTrigger>
         <AccordionContent>
@@ -210,13 +207,7 @@ export function AccordionMultiple({
 
           <h1 className="text-lg font-semibold">Hasil</h1>
 
-          <BlockMath
-            math={`Z = ${rules.map((r) => {
-              if (r.alpha > 0.01) {
-                return `${r.z}`;
-              }
-            })} { ml}`}
-          />
+          <BlockMath math={`Z = ${hasil} { ml}`} />
         </AccordionContent>
       </AccordionItem>
     </Accordion>

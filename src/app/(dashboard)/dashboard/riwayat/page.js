@@ -8,6 +8,14 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { db } from "@/lib/firebase";
 import { collection, getDocs } from "firebase/firestore";
 import { useEffect, useState } from "react";
@@ -49,12 +57,26 @@ export default function RiwayatPage() {
               <CardTitle>Detergen: {r.hasil}ml </CardTitle>
             </CardHeader>
             <CardContent>
-              {r.rules.map((rule, j) => (
-                <p key={j}>
-                  {rule.name} - {rule.alpha.toFixed(2)} - {rule.zType} -{" "}
-                  {rule.z.toFixed(2)}
-                </p>
-              ))}
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Rules</TableHead>
+                    <TableHead>alpha</TableHead>
+                    <TableHead>type z</TableHead>
+                    <TableHead>nilai z</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {r.rules.map((rule, j) => (
+                    <TableRow key={j}>
+                      <TableCell>{rule.name}</TableCell>
+                      <TableCell>{rule.alpha.toFixed(2)}</TableCell>
+                      <TableCell>{rule.zType}</TableCell>
+                      <TableCell>{rule.z.toFixed(2)}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
             </CardContent>
           </Card>
         ))}

@@ -33,12 +33,12 @@ export default function AppSidebar() {
     },
     {
       title: "Data",
-      url: "/dashboard/data",
+      url: "#",
       icon: Database,
     },
     {
       title: "Profile",
-      url: "/dashboard/profile",
+      url: "#",
       icon: User,
     },
   ];

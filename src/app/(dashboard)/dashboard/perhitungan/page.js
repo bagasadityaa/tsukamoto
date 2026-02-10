@@ -157,15 +157,13 @@ export default function PerhitunganDetergenPage() {
               beratkain={beratKain}
               ketebalanKain={ketebalanKain}
               warnaKain={warnaKain}
+              hasil={hasil}
               handleHitung={handleHitung}
             />
           </CardContent>
-          <CardFooter className="grid grid-cols-3 space-x-2 justify-between">
+          <CardFooter className="grid grid-cols-2 space-x-2 justify-between">
             <Button onClick={handleSimpan} type="submit">
               Simpan
-            </Button>
-            <Button type="submit" variant="secondary">
-              Reset
             </Button>
             <Button
               onClick={() => router.push("/dashboard/riwayat")}
