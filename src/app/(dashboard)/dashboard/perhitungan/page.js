@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { db } from "@/lib/firebase";
 import usePerhitungan from "@/lib/perhitunganDetergen";
+import { hitungDetergenTsukamoto } from "@/lib/tsukamoto";
 import { addDoc, collection } from "firebase/firestore";
 import { useRouter } from "next/navigation";
 
@@ -19,21 +20,38 @@ import { useState } from "react";
 export default function PerhitunganDetergenPage() {
   const [data, setData] = useState([]);
   const router = useRouter();
-  const {
-    warnaKain,
-    ketebalanKain,
-    beratKain,
-    hasil,
-    setWarnaKain,
-    setKetebalanKain,
-    setBeratKain,
-    handleHitung,
-    WARNA_MAX,
-    TEBAL_MAX,
-    BERAT_MAX,
-    rules,
-  } = usePerhitungan();
+  // const {
+  //   warnaKain,
+  //   ketebalanKain,
+  //   beratKain,
+  //   hasil,
+  //   setWarnaKain,
+  //   setKetebalanKain,
+  //   setBeratKain,
+  //   handleHitung,
+  //   WARNA_MAX,
+  //   TEBAL_MAX,
+  //   BERAT_MAX,
+  //   rules,
+  // } = usePerhitungan();
 
+  const [v, setV] = useState("");
+  const [w, setW] = useState("");
+  const [x, setX] = useState("");
+  const [y, setY] = useState("");
+  const { hasilRule } = hitungDetergenTsukamoto();
+  const [result, setResult] = useState(null);
+
+  const handleHitung = () => {
+    const res = hitungDetergenTsukamoto(
+      Number(v),
+      Number(w),
+      Number(x),
+      Number(y),
+    );
+    setResult(res);
+  };
+  console.log(hasilRule);
   const handleSimpan = async () => {
     try {
       const docRef = await addDoc(collection(db, "data"), {
@@ -56,7 +74,7 @@ export default function PerhitunganDetergenPage() {
     }
   };
 
-  console.log("data", data);
+  console.log("data", result);
   return (
     <div className="">
       <h1>Perhitungan Detergen</h1>
@@ -69,66 +87,30 @@ export default function PerhitunganDetergenPage() {
           <form
             onSubmit={(e) => {
               e.preventDefault(); // biar ga reload
-              hitungDeterjen(); // fungsi fuzzy kamu
             }}
           >
             <div className="flex flex-col gap-6">
-              <div className="flex items-center gap-2">
-                <Label htmlFor="warnaKain" className="w-32">
-                  Warna Kain
-                </Label>
-                <div className="flex flex-col w-full">
-                  <Input
-                    id="warnaKain"
-                    type="number"
-                    value={warnaKain}
-                    max={WARNA_MAX}
-                    onChange={(e) => setWarnaKain(Number(e.target.value))}
-                    required
-                  />
-                  <p className="text-sm text-muted-foreground">
-                    Max: {WARNA_MAX}
-                  </p>
-                </div>
-              </div>
+              <label>
+                Berat (Kg)
+                <input value={v ?? ""} onChange={(e) => setV(e.target.value)} />
+              </label>
 
-              <div className="flex items-center gap-2">
-                <Label htmlFor="ketebalanKain" className="w-32">
-                  Ketebalan Kain
-                </Label>
-                <div className="flex w-full flex-col">
-                  <Input
-                    id="ketebalanKain"
-                    type="number"
-                    value={ketebalanKain}
-                    onChange={(e) => setKetebalanKain(Number(e.target.value))}
-                    required
-                    max={TEBAL_MAX}
-                  />
-                  <p className="text-sm text-muted-foreground">
-                    Max: {TEBAL_MAX}
-                  </p>
-                </div>
-              </div>
+              <label>
+                Warna (0-100)
+                <input value={w ?? ""} onChange={(e) => setW(e.target.value)} />
+              </label>
 
-              <div className="flex items-center gap-2">
-                <Label htmlFor="beratKain" className="w-32">
-                  Berat Kain
-                </Label>
-                <div className="flex w-full flex-col">
-                  <Input
-                    id="beratKain"
-                    type="number"
-                    value={beratKain}
-                    onChange={(e) => setBeratKain(Number(e.target.value))}
-                    required
-                    max={BERAT_MAX}
-                  />
-                  <p className="text-sm text-muted-foreground">
-                    Max: {BERAT_MAX}
-                  </p>
-                </div>
-              </div>
+              <label>
+                Tingkat Kotor (1-10)
+                <input value={x ?? ""} onChange={(e) => setX(e.target.value)} />
+              </label>
+
+              <label>
+                Ketebalan (mm)
+                <input value={y ?? ""} onChange={(e) => setY(e.target.value)} />
+              </label>
+
+              <button onClick={handleHitung}>Hitung</button>
             </div>
           </form>
         </CardContent>
@@ -140,39 +122,23 @@ export default function PerhitunganDetergenPage() {
         </CardFooter>
       </Card>
 
-      {hasil && (
-        <div className="mt-4 text-center">
-          <p className="text-sm text-muted-foreground">Takaran Detergen</p>
-          <p className="text-2xl font-bold">{hasil} ml</p>
+      {result && (
+        <div style={{ marginTop: 20 }}>
+          <h3>Hasil</h3>
+
+          <p>
+            Takaran Detergen: <b>{result.hasil} ml</b>
+          </p>
+
+          <p>Atas (Σαz): {result.atas}</p>
+          <p>Bawah (Σα): {result.bawah}</p>
+
+          <h4>Input</h4>
+          <pre>{JSON.stringify(result.input, null, 2)}</pre>
+
+          <h4>Derajat Keanggotaan</h4>
+          <pre>{JSON.stringify(result.mu, null, 2)}</pre>
         </div>
-      )}
-      {hasil === null ? null : (
-        <Card className="w-full my-2">
-          <CardHeader>
-            <CardTitle>Detail Proses Fuzzy</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <AccordionMultiple
-              rules={rules}
-              beratkain={beratKain}
-              ketebalanKain={ketebalanKain}
-              warnaKain={warnaKain}
-              hasil={hasil}
-              handleHitung={handleHitung}
-            />
-          </CardContent>
-          <CardFooter className="grid grid-cols-2 space-x-2 justify-between">
-            <Button onClick={handleSimpan} type="submit">
-              Simpan
-            </Button>
-            <Button
-              onClick={() => router.push("/dashboard/riwayat")}
-              variant="outline"
-            >
-              Lihat Riwayat
-            </Button>
-          </CardFooter>
-        </Card>
       )}
     </div>
   );
