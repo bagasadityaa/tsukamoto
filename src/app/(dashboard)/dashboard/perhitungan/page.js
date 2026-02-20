@@ -1,5 +1,4 @@
 "use client";
-import { AccordionMultiple } from "@/components/accordion";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -11,14 +10,14 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { db } from "@/lib/firebase";
-import usePerhitungan from "@/lib/perhitunganDetergen";
 import { hitungDetergenTsukamoto } from "@/lib/tsukamoto";
 import { addDoc, collection } from "firebase/firestore";
 import { useRouter } from "next/navigation";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 export default function PerhitunganDetergenPage() {
   const [data, setData] = useState([]);
+  const [mounted, setMounted] = useState(false);
   const router = useRouter();
   // const {
   //   warnaKain,
@@ -41,7 +40,10 @@ export default function PerhitunganDetergenPage() {
   const [y, setY] = useState("");
   const { hasilRule, mu } = hitungDetergenTsukamoto();
   const [result, setResult] = useState(null);
-
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+  if (!mounted) return null;
   const handleHitung = () => {
     const res = hitungDetergenTsukamoto(
       Number(v),
@@ -55,11 +57,11 @@ export default function PerhitunganDetergenPage() {
   const handleSimpan = async () => {
     try {
       const docRef = await addDoc(collection(db, "data"), {
-        rules: rules || [],
-        hasil: hasil || 0,
-        beratKain,
-        ketebalanKain,
-        warnaKain,
+        rules: result?.ruleDetail || [],
+        hasil: result?.hasil || 0,
+        beratKain: v,
+        ketebalanKain: y,
+        warnaKain: w,
         createdAt: new Date(),
       });
 
@@ -109,15 +111,34 @@ export default function PerhitunganDetergenPage() {
                 Ketebalan (mm)
                 <Input value={y ?? ""} onChange={(e) => setY(e.target.value)} />
               </Label>
-
-              <button onClick={handleHitung}>Hitung</button>
             </div>
           </form>
         </CardContent>
 
-        <CardFooter className="flex-col gap-2">
-          <Button type="submit" className="w-full" onClick={handleHitung}>
+        <CardFooter className="grid grid-cols-3 gap-4">
+          <Button
+            type="submit"
+            className="w-full"
+            variant="default"
+            onClick={handleHitung}
+          >
             Hitung Takaran Detergen
+          </Button>
+          <Button
+            type="submit"
+            className="w-full"
+            onClick={handleSimpan}
+            variant="secondary"
+          >
+            Simpan Hasil Perhitungan
+          </Button>
+          <Button
+            type="submit"
+            className="w-full"
+            onClick={() => router.push("/dashboard/riwayat")}
+            variant="outline"
+          >
+            Lihat Riwayat
           </Button>
         </CardFooter>
       </Card>
