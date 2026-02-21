@@ -56,9 +56,34 @@ const invoices = [
   },
 ];
 
-export function TableDemo({ tableHead, tableRow }) {
+export function TableDemo({ data }) {
   const [mounted, setMounted] = useState(false);
+  const tableHead = [
+    { key: "tanggal", label: "Tanggal" },
+    { key: "beratKain", label: "Berat (kg)" },
+    { key: "ketebalanKain", label: "Tebal (mm)" },
+    { key: "warnaKain", label: "Warna" },
+    { key: "kotorKain", label: "Kotor" },
+    { key: "hasil", label: "Hasil (ml)" },
+  ];
+  const formatDate = (value) => {
+    if (!value) return "-";
 
+    const d =
+      typeof value?.toDate === "function" ? value.toDate() : new Date(value);
+
+    return d.toLocaleDateString("id-ID");
+  };
+
+  const tableRow = data.map((item, index) => ({
+    id: index,
+    tanggal: formatDate(item.createdAt),
+    beratKain: item.beratKain,
+    ketebalanKain: item.ketebalanKain,
+    warnaKain: item.warnaKain,
+    kotorKain: item.kotorKain,
+    hasil: Number(item.hasil).toFixed(2),
+  }));
   useEffect(() => {
     setMounted(true);
   }, []);
@@ -68,39 +93,20 @@ export function TableDemo({ tableHead, tableRow }) {
     <Table>
       <TableHeader>
         <TableRow>
-          {tableHead === undefined ? (
-            <>
-              <TableHead>Tanggal</TableHead>
-              <TableHead>Berat (kg)</TableHead>
-              <TableHead>Kotor</TableHead>
-              <TableHead>Warna</TableHead>
-              <TableHead>Hasil (ml)</TableHead>
-            </>
-          ) : (
-            tableHead.map((head) => (
-              <TableHead key={head.key}>{head.label}</TableHead>
-            ))
-          )}
+          {tableHead.map((head) => (
+            <TableHead key={head.key}>{head.label}</TableHead>
+          ))}
         </TableRow>
       </TableHeader>
+
       <TableBody>
-        {tableRow === undefined
-          ? invoices.map((invoice) => (
-              <TableRow key={invoice.invoice}>
-                <TableCell className="font-medium">{invoice.invoice}</TableCell>
-                <TableCell>{invoice.paymentStatus}</TableCell>
-                <TableCell>{invoice.paymentMethod}</TableCell>
-                <TableCell>{invoice.totalAmount}</TableCell>
-                <TableCell>{invoice.totalAmount}</TableCell>
-              </TableRow>
-            ))
-          : tableRow.map((row) => (
-              <TableRow key={row.id}>
-                {tableHead.map((head) => (
-                  <TableCell key={head.key}>{row[head.key]}</TableCell>
-                ))}
-              </TableRow>
+        {tableRow.map((row) => (
+          <TableRow key={row.id}>
+            {tableHead.map((head) => (
+              <TableCell key={head.key}>{row[head.key]}</TableCell>
             ))}
+          </TableRow>
+        ))}
       </TableBody>
     </Table>
   );

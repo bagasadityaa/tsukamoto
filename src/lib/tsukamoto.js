@@ -198,7 +198,7 @@ export function hitungDetergenTsukamoto(vInput, wInput, xInput, yInput) {
       const z2 = zSedangTurun(alpha);
       z = (z1 + z2) / 2;
     }
-    console.log(alpha, z, atas, bawah);
+
     atas += alpha * z;
     bawah += alpha;
 

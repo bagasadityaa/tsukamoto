@@ -20,23 +20,48 @@ import {
 
 export const description = "A simple area chart";
 
-const chartData = [
-  { month: "January", desktop: 186 },
-  { month: "February", desktop: 305 },
-  { month: "March", desktop: 237 },
-  { month: "April", desktop: 73 },
-  { month: "May", desktop: 209 },
-  { month: "June", desktop: 214 },
-];
+export function ChartAreaDefault({ data }) {
+  // Normalisasi tanggal
+  const normalizeDate = (item) => {
+    if (!item.createdAt) return null;
 
-const chartConfig = {
-  desktop: {
-    label: "Desktop",
-    color: "var(--chart-1)",
-  },
-};
+    const d =
+      typeof item.createdAt?.toDate === "function"
+        ? item.createdAt.toDate()
+        : new Date(item.createdAt);
 
-export function ChartAreaDefault() {
+    return d.toISOString().split("T")[0]; // YYYY-MM-DD
+  };
+
+  // Kelompokkan per hari
+  const grouped = {};
+
+  data.forEach((item) => {
+    const date = normalizeDate(item);
+    if (!date) return;
+
+    if (!grouped[date]) {
+      grouped[date] = 0;
+    }
+
+    grouped[date] += Number(item.hasil);
+  });
+
+  // Ubah ke format chart
+  const chartData = Object.entries(grouped).map(([date, total]) => ({
+    date,
+    total,
+  }));
+  const chartConfig = {
+    total: {
+      label: "Total (ml)",
+      color: "hsl(var(--chart-1))",
+    },
+    average: {
+      label: "Rata-rata (ml)",
+      color: "hsl(var(--chart-2))",
+    },
+  };
   return (
     <Card>
       <CardHeader>
@@ -50,25 +75,26 @@ export function ChartAreaDefault() {
           <AreaChart
             accessibilityLayer
             data={chartData}
-            margin={{
-              left: 12,
-              right: 12,
-            }}
+            margin={{ left: 12, right: 12 }}
           >
             <CartesianGrid vertical={false} />
+
             <XAxis
-              dataKey="month"
+              dataKey="date"
               tickLine={false}
               axisLine={false}
               tickMargin={8}
-              tickFormatter={(value) => value.slice(0, 3)}
+              tickFormatter={(value) => value.slice(5)}
+              // hanya tampilkan MM-DD
             />
+
             <ChartTooltip
               cursor={false}
               content={<ChartTooltipContent indicator="line" />}
             />
+
             <Area
-              dataKey="desktop"
+              dataKey="total"
               type="natural"
               fill="var(--color-desktop)"
               fillOpacity={0.4}
@@ -77,18 +103,6 @@ export function ChartAreaDefault() {
           </AreaChart>
         </ChartContainer>
       </CardContent>
-      <CardFooter>
-        <div className="flex w-full items-start gap-2 text-sm">
-          <div className="grid gap-2">
-            <div className="flex items-center gap-2 leading-none font-medium">
-              Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
-            </div>
-            <div className="text-muted-foreground flex items-center gap-2 leading-none">
-              January - June 2024
-            </div>
-          </div>
-        </div>
-      </CardFooter>
     </Card>
   );
 }

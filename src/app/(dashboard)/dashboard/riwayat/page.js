@@ -17,11 +17,13 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { db } from "@/lib/firebase";
+import { createDropdownMenuScope } from "@radix-ui/react-dropdown-menu";
 import { collection, getDocs } from "firebase/firestore";
 import { useEffect, useState } from "react";
 
 export default function RiwayatPage() {
   const [data, setData] = useState([]);
+  const [mounted, setMounted] = useState(false);
 
   const ambilData = async () => {
     try {
@@ -42,37 +44,56 @@ export default function RiwayatPage() {
     ambilData();
   }, []);
 
-  console.log("DATA:", data);
-
+  useEffect(() => {
+    setMounted(true);
+  });
+  if (!mounted) return null;
+  if (typeof window !== "undefined") console.log("data", data);
   return (
     <div>
       <h1>Riwayat Page</h1>
       <div className="grid">
         {data.map((r, i) => (
-          <Card key={i} className="my-2 ">
+          <Card key={i} className="my-4">
             <CardHeader>
-              <CardTitle>Berat Kain: {r.beratKain}kg</CardTitle>
-              <CardTitle>Ketebalan Kain: {r.ketebalanKain} </CardTitle>
-              <CardTitle>Warna Kain: {r.warnaKain} </CardTitle>
-              <CardTitle>Detergen: {r.hasil}ml </CardTitle>
+              <CardTitle>Detail Pencucian</CardTitle>
+
+              <div className="text-sm space-y-1">
+                <p>Berat Kain: {r.beratKain} kg</p>
+                <p>Ketebalan Kain: {r.ketebalanKain} mm</p>
+                <p>Warna Kain: {r.warnaKain}</p>
+                <p>Kotor Kain: {r.kotorKain}</p>
+                <p className="font-semibold">Hasil Detergen: {r.hasil} ml</p>
+              </div>
             </CardHeader>
+
             <CardContent>
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Rules</TableHead>
-                    <TableHead>alpha</TableHead>
-                    <TableHead>type z</TableHead>
-                    <TableHead>nilai z</TableHead>
+                    <TableHead>Rule</TableHead>
+                    <TableHead>IF</TableHead>
+                    <TableHead>Output</TableHead>
+                    <TableHead>Alpha</TableHead>
+                    <TableHead>Z</TableHead>
                   </TableRow>
                 </TableHeader>
+
                 <TableBody>
                   {r.rules.map((rule, j) => (
                     <TableRow key={j}>
-                      <TableCell>{rule.name}</TableCell>
-                      <TableCell>{rule.alpha.toFixed(2)}</TableCell>
-                      <TableCell>{rule.zType}</TableCell>
-                      <TableCell>{rule.z.toFixed(2)}</TableCell>
+                      <TableCell>R{rule.ruleNo}</TableCell>
+
+                      <TableCell>
+                        Berat {rule.IF.berat}, Warna {rule.IF.warna}, Kotor{" "}
+                        {rule.IF.kotor}, Tebal {rule.IF.tebal}
+                      </TableCell>
+
+                      <TableCell>{rule.out}</TableCell>
+
+                      <TableCell>{rule.alpha.toFixed(3)}</TableCell>
+
+                      <TableCell>{rule.z.toFixed(3)}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>

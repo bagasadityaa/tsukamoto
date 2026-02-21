@@ -53,31 +53,33 @@ export default function PerhitunganDetergenPage() {
     );
     setResult(res);
   };
-  console.log(hasilRule);
+  const res = {
+    rules: result?.ruleDetail || [],
+    hasil: result?.hasil || 0,
+    beratKain: v,
+    ketebalanKain: y,
+    warnaKain: w,
+    kotorKain: x,
+    createdAt: new Date(),
+  };
   const handleSimpan = async () => {
     try {
       const docRef = await addDoc(collection(db, "data"), {
-        rules: result?.ruleDetail || [],
-        hasil: result?.hasil || 0,
-        beratKain: v,
-        ketebalanKain: y,
-        warnaKain: w,
-        createdAt: new Date(),
+        res,
       });
 
       // kalau mau simpan ID ke state
       setData({
         id: docRef.id,
-        rules: result?.ruleDetail || [],
+        rules: result || [],
       });
       alert("data berhasil disimpan!");
-      console.log("Document written with ID: ", data?.id, result?.ruleDetail);
     } catch (err) {
       console.error("Error adding document:", err);
     }
   };
 
-  console.log("data", result);
+  console.log("data", res);
   return (
     <div className="">
       <h1>Perhitungan Detergen</h1>
