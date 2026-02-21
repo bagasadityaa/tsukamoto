@@ -68,9 +68,10 @@ export default function PerhitunganDetergenPage() {
       // kalau mau simpan ID ke state
       setData({
         id: docRef.id,
-        rules: rules || [],
+        rules: result?.ruleDetail || [],
       });
       alert("data berhasil disimpan!");
+      console.log("Document written with ID: ", data?.id, result?.ruleDetail);
     } catch (err) {
       console.error("Error adding document:", err);
     }
@@ -115,14 +116,14 @@ export default function PerhitunganDetergenPage() {
           </form>
         </CardContent>
 
-        <CardFooter className="grid grid-cols-3 gap-4">
+        <CardFooter className="grid grid-cols-2 gap-3 ">
           <Button
             type="submit"
             className="w-full"
             variant="default"
             onClick={handleHitung}
           >
-            Hitung Takaran Detergen
+            Hitung
           </Button>
           <Button
             type="submit"
@@ -130,7 +131,7 @@ export default function PerhitunganDetergenPage() {
             onClick={handleSimpan}
             variant="secondary"
           >
-            Simpan Hasil Perhitungan
+            Simpan
           </Button>
           <Button
             type="submit"
@@ -139,6 +140,14 @@ export default function PerhitunganDetergenPage() {
             variant="outline"
           >
             Lihat Riwayat
+          </Button>
+          <Button
+            type="submit"
+            className="w-full"
+            onClick={() => setResult(null)}
+            variant="destructive"
+          >
+            Reset
           </Button>
         </CardFooter>
       </Card>
@@ -150,6 +159,26 @@ export default function PerhitunganDetergenPage() {
           <p>
             Takaran Detergen: <b>{result.hasil} ml</b>
           </p>
+
+          <div>
+            Rule:{" "}
+            <b className="space-y-2 border-b-2">
+              {result?.ruleDetail.map((rule) => (
+                <div key={rule.ruleNo} className="border p-3 mb-2">
+                  <p>Rule #{rule.ruleNo}</p>
+
+                  <p>
+                    IF Berat = {rule.IF.berat} AND Warna = {rule.IF.warna} AND
+                    Kotor = {rule.IF.kotor} AND Tebal = {rule.IF.tebal}
+                  </p>
+
+                  <p>THEN = {rule.out}</p>
+                  <p>Alpha = {rule.alpha}</p>
+                  <p>Z = {rule.z}</p>
+                </div>
+              ))}
+            </b>
+          </div>
 
           <p>Atas (Σαz): {result.atas}</p>
           <p>Bawah (Σα): {result.bawah}</p>
