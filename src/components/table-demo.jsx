@@ -77,12 +77,12 @@ export function TableDemo({ data }) {
 
   const tableRow = data.map((item, index) => ({
     id: index,
-    tanggal: formatDate(item.createdAt),
-    beratKain: item.beratKain,
-    ketebalanKain: item.ketebalanKain,
-    warnaKain: item.warnaKain,
-    kotorKain: item.kotorKain,
-    hasil: Number(item.hasil).toFixed(2),
+    tanggal: formatDate(item.res.createdAt),
+    beratKain: item.res.beratKain,
+    ketebalanKain: item.res.ketebalanKain,
+    warnaKain: item.res.warnaKain,
+    kotorKain: item.res.kotorKain,
+    hasil: Number(item.res.hasil).toFixed(2),
   }));
   useEffect(() => {
     setMounted(true);

@@ -37,14 +37,14 @@ export function ChartAreaDefault({ data }) {
   const grouped = {};
 
   data.forEach((item) => {
-    const date = normalizeDate(item);
+    const date = normalizeDate(item?.res);
     if (!date) return;
 
     if (!grouped[date]) {
       grouped[date] = 0;
     }
 
-    grouped[date] += Number(item.hasil);
+    grouped[date] += Number(item.res.hasil);
   });
 
   // Ubah ke format chart

@@ -27,7 +27,6 @@ export default function DashboardPage() {
       console.error("Error getting documents:", err);
     }
   };
-
   useEffect(() => {
     ambilData();
   }, []);
@@ -36,12 +35,12 @@ export default function DashboardPage() {
   const todayString = today.toISOString().split("T")[0];
 
   const dataToday = data.filter((item) => {
-    if (!item.createdAt) return false;
+    if (!item?.res.createdAt) return false;
 
     const itemDate =
-      typeof item.createdAt.toDate === "function"
-        ? item.createdAt.toDate()
-        : new Date(item.createdAt);
+      typeof item?.res.createdAt.toDate === "function"
+        ? item?.res.createdAt.toDate()
+        : new Date(item?.res.createdAt);
 
     return itemDate.toISOString().split("T")[0] === todayString;
   });
