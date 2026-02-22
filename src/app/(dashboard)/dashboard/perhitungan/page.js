@@ -40,10 +40,7 @@ export default function PerhitunganDetergenPage() {
   const [y, setY] = useState("");
   const { hasilRule, mu } = hitungDetergenTsukamoto();
   const [result, setResult] = useState(null);
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-  if (!mounted) return null;
+
   const handleHitung = () => {
     const res = hitungDetergenTsukamoto(
       Number(v),

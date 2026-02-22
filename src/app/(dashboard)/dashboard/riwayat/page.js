@@ -59,11 +59,13 @@ export default function RiwayatPage() {
               <CardTitle>Detail Pencucian</CardTitle>
 
               <div className="text-sm space-y-1">
-                <p>Berat Kain: {r.beratKain} kg</p>
-                <p>Ketebalan Kain: {r.ketebalanKain} mm</p>
-                <p>Warna Kain: {r.warnaKain}</p>
-                <p>Kotor Kain: {r.kotorKain}</p>
-                <p className="font-semibold">Hasil Detergen: {r.hasil} ml</p>
+                <p>Berat Kain: {r.res?.beratKain} kg</p>
+                <p>Ketebalan Kain: {r.res?.ketebalanKain} mm</p>
+                <p>Warna Kain: {r.res?.warnaKain}</p>
+                <p>Kotor Kain: {r.res?.kotorKain}</p>
+                <p className="font-semibold">
+                  Hasil Detergen: {r.res?.hasil} ml
+                </p>
               </div>
             </CardHeader>
 
@@ -80,7 +82,7 @@ export default function RiwayatPage() {
                 </TableHeader>
 
                 <TableBody>
-                  {r.rules.map((rule, j) => (
+                  {r.res?.rules?.map((rule, j) => (
                     <TableRow key={j}>
                       <TableCell>R{rule.ruleNo}</TableCell>
 
