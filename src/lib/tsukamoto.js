@@ -25,19 +25,26 @@ export function hitungDetergenTsukamoto(vInput, wInput, xInput, yInput) {
 
   // Berat (v)
   const muBeratRingan = (v) => {
-    if (v >= 1 && v <= 4) return (4 - v) / (4 - 1);
-    return 0;
+    if (v <= 1) return 1;
+    if (v >= 4) return 0;
+    return (4 - v) / (4 - 1);
   };
+
   const muBeratSedang = (v) => {
     if (v <= 2 || v >= 6) return 0;
-    if (v >= 2 && v <= 4) return (v - 2) / (4 - 2);
-    if (v >= 4 && v <= 6) return (6 - v) / (6 - 4);
-    return 0;
+
+    if (v >= 2 && v <= 4) {
+      return (v - 2) / (4 - 2);
+    }
+
+    return (6 - v) / (6 - 4);
   };
+
   const muBeratBerat = (v) => {
-    if (v < 4) return 0;
-    if (v >= 4 && v <= 8) return (v - 4) / (8 - 4);
-    return 1;
+    if (v <= 4) return 0;
+    if (v >= 8) return 1;
+
+    return (v - 4) / (8 - 4);
   };
 
   // Warna (w)
@@ -58,20 +65,28 @@ export function hitungDetergenTsukamoto(vInput, wInput, xInput, yInput) {
   };
 
   // Tingkat kotor (x)
-  const muKotorRingan = (x) => {
-    if (x >= 1 && x <= 5) return (5 - x) / (5 - 1);
-    return 0;
+  const muKotorBiasa = (x) => {
+    if (x <= 1) return 1;
+    if (x >= 5) return 0;
+
+    return (5 - x) / (5 - 1);
   };
+
   const muKotorSedang = (x) => {
     if (x <= 3 || x >= 7) return 0;
-    if (x >= 3 && x <= 5) return (x - 3) / (5 - 3);
-    if (x >= 5 && x <= 7) return (7 - x) / (7 - 5);
-    return 0;
+
+    if (x >= 3 && x <= 5) {
+      return (x - 3) / (5 - 3);
+    }
+
+    return (7 - x) / (7 - 5);
   };
+
   const muKotorBerat = (x) => {
-    if (x < 5) return 0;
-    if (x >= 5 && x <= 10) return (x - 5) / (10 - 5);
-    return 1;
+    if (x <= 5) return 0;
+    if (x >= 10) return 1;
+
+    return (x - 5) / (10 - 5);
   };
 
   // Ketebalan (y)
@@ -107,7 +122,7 @@ export function hitungDetergenTsukamoto(vInput, wInput, xInput, yInput) {
   };
 
   const kotor = {
-    ringan: muKotorRingan(x),
+    ringan: muKotorBiasa(x),
     sedang: muKotorSedang(x),
     berat: muKotorBerat(x),
   };
