@@ -17,7 +17,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/hooks/useAuth";
 import { doc, getDoc } from "firebase/firestore";
-import { db } from "@/lib/firebase";
+import { authLib, db } from "@/lib/firebase";
+import { signOut } from "firebase/auth";
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -28,16 +29,6 @@ export default function LoginPage() {
   // useEffect harus di atas, sebelum return apapun
   useEffect(() => {
     if (!user) return;
-    const checkRole = async () => {
-      const userDoc = await getDoc(doc(db, "users", user.uid));
-      const role = userDoc.data()?.role;
-      if (role === "admin") {
-        window.location.href = "/dashboard";
-      } else {
-        window.location.href = "/dashboard";
-      }
-    };
-    checkRole();
   }, [user]);
 
   // Return loading SETELAH semua hooks
@@ -54,14 +45,14 @@ export default function LoginPage() {
       if (role === "admin" && userRole !== "admin") {
         // Pilih login sebagai Admin, tapi di DB bukan admin
         alert("Akses ditolak: Anda bukan Admin.");
-        await auth.signOut(); // logout agar session tidak tersimpan
+        await signOut(authLib); // logout agar session tidak tersimpan
         return;
       }
 
       if (role === "karyawan" && userRole !== "karyawan") {
         // Pilih login sebagai Karyawan, tapi di DB bukan karyawan (misal admin)
         alert("Akses ditolak: Silakan login sebagai Admin.");
-        await auth.signOut();
+        await signOut(authLib);
         return;
       }
 
