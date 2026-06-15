@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { login } from "@/lib/auth";
 
 import { Button } from "@/components/ui/button";
@@ -16,31 +16,58 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/hooks/useAuth";
+import { doc, getDoc } from "firebase/firestore";
+import { db } from "@/lib/firebase";
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
 
-  if (user) {
-    window.location.href = "/dashboard";
-  }
+  // useEffect harus di atas, sebelum return apapun
+  useEffect(() => {
+    if (!user) return;
+
+    const checkRole = async () => {
+      const userDoc = await getDoc(doc(db, "users", user.uid));
+      const role = userDoc.data()?.role;
+
+      if (role === "admin") {
+        window.location.href = "/dashboard";
+      } else {
+        window.location.href = "/dashboard";
+      }
+    };
+
+    checkRole();
+  }, [user]);
+
+  // Return loading SETELAH semua hooks
+  if (loading) return null;
+
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      await login(email, password);
-      window.location.href = "/dashboard";
+      const userCredential = await login(email, password);
+      const uid = userCredential.user.uid;
+
+      const userDoc = await getDoc(doc(db, "users", uid));
+      const role = userDoc.data()?.role;
+
+      if (role === "admin") {
+        window.location.href = "/admin/dashboard";
+      } else {
+        window.location.href = "/bukanAdmin";
+      }
     } catch (err) {
-      setError(err.message);
       alert("Login failed: " + err.message);
     }
   };
 
   return (
-    <div className="flex h-screen w-full justify-center items-center ">
+    <div className="flex h-screen w-full justify-center items-center">
       <Card className="w-full max-w-sm bg-gray-500/20">
         <CardHeader>
-          <CardTitle>Login to your account</CardTitle>
+          <CardTitle>Login</CardTitle>
         </CardHeader>
         <form onSubmit={handleLogin}>
           <CardContent>
@@ -55,9 +82,7 @@ export default function LoginPage() {
                 />
               </div>
               <div className="grid gap-2">
-                <div className="flex items-center">
-                  <Label htmlFor="password">Password</Label>
-                </div>
+                <Label htmlFor="password">Password</Label>
                 <Input
                   id="password"
                   type="password"
@@ -67,7 +92,7 @@ export default function LoginPage() {
               </div>
             </div>
             <CardFooter className="w-full">
-              <Button type="submit" className="w-full  m-2">
+              <Button type="submit" className="w-full m-2">
                 Login
               </Button>
             </CardFooter>

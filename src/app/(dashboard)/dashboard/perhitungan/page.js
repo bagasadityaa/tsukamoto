@@ -94,7 +94,13 @@ export default function PerhitunganDetergenPage() {
             <div className="flex flex-col gap-6 ">
               <Label>
                 Berat (Kg)
-                <Input value={v ?? ""} onChange={(e) => setV(e.target.value)} />
+                <Input
+                  type="number"
+                  min="1"
+                  max="8"
+                  value={v}
+                  onChange={(e) => setV(e.target.value)}
+                />
               </Label>
 
               <Label>
@@ -150,43 +156,112 @@ export default function PerhitunganDetergenPage() {
           </Button>
         </CardFooter>
       </Card>
-
       {result && (
-        <div style={{ marginTop: 20 }}>
-          <h3>Hasil</h3>
-
-          <p>
-            Takaran Detergen: <b>{result.hasil} ml</b>
-          </p>
-
-          <div>
-            Rule:{" "}
-            <b className="space-y-2 border-b-2">
-              {result?.ruleDetail.map((rule) => (
-                <div key={rule.ruleNo} className="border p-3 mb-2">
-                  <p>Rule #{rule.ruleNo}</p>
-
-                  <p>
-                    IF Berat = {rule.IF.berat} AND Warna = {rule.IF.warna} AND
-                    Kotor = {rule.IF.kotor} AND Tebal = {rule.IF.tebal}
-                  </p>
-
-                  <p>THEN = {rule.out}</p>
-                  <p>Alpha = {rule.alpha}</p>
-                  <p>Z = {rule.z}</p>
-                </div>
-              ))}
-            </b>
+        <div className="mt-6 space-y-6">
+          {/* Hasil Utama */}
+          <div className="rounded-xl bg-primary/10 border border-primary/20 p-4 text-center">
+            <p className="text-sm text-muted-foreground">Takaran Detergen</p>
+            <p className="text-3xl font-bold text-primary mt-1">
+              {result.hasil} ml
+            </p>
           </div>
 
-          <p>Atas (Σαz): {result.atas}</p>
-          <p>Bawah (Σα): {result.bawah}</p>
+          {/* Input & Derajat Keanggotaan */}
+          <div className="grid  gap-4">
+            <div className="rounded-xl border p-4 space-y-2">
+              <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
+                Input
+              </p>
+              {Object.entries(result.input).map(([key, val]) => (
+                <div key={key} className="flex justify-between text-sm">
+                  <span className="capitalize text-muted-foreground">
+                    {key}
+                  </span>
+                  <span className="font-medium">{val}</span>
+                </div>
+              ))}
+            </div>
 
-          <h4>Input</h4>
-          <pre>{JSON.stringify(result.input, null, 2)}</pre>
+            <div className="rounded-xl border p-4 space-y-2">
+              <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
+                Derajat Keanggotaan
+              </p>
+              {Object.entries(result.mu).map(([key, vals]) => (
+                <div key={key} className="text-sm">
+                  <p className="capitalize font-medium">{key}</p>
+                  <div className="flex gap-2 flex-wrap">
+                    {Object.entries(vals).map(([label, val]) => (
+                      <span
+                        key={label}
+                        className="text-xs bg-muted px-2 py-0.5 rounded-full"
+                      >
+                        {label}: {val}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
 
-          <h4>Derajat Keanggotaan</h4>
-          <pre>{JSON.stringify(result.mu, null, 2)}</pre>
+          {/* Rule Detail */}
+          <div className="space-y-2">
+            <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
+              Rule Detail
+            </p>
+            {result.ruleDetail.map((rule) => (
+              <div
+                key={rule.ruleNo}
+                className="rounded-xl border p-4 space-y-1 text-sm"
+              >
+                <p className="font-semibold text-primary">
+                  Rule #{rule.ruleNo}
+                </p>
+                <p className="text-muted-foreground">
+                  IF Berat ={" "}
+                  <span className="text-foreground font-medium">
+                    {rule.IF.berat}
+                  </span>{" "}
+                  AND Warna ={" "}
+                  <span className="text-foreground font-medium">
+                    {rule.IF.warna}
+                  </span>{" "}
+                  AND Kotor ={" "}
+                  <span className="text-foreground font-medium">
+                    {rule.IF.kotor}
+                  </span>{" "}
+                  AND Tebal ={" "}
+                  <span className="text-foreground font-medium">
+                    {rule.IF.tebal}
+                  </span>
+                </p>
+                <div className="flex gap-4 pt-1">
+                  <span>
+                    THEN: <b>{rule.out}</b>
+                  </span>
+                  <span>
+                    α: <b>{rule.alpha}</b>
+                  </span>
+                  <span>
+                    Z: <b>{rule.z}</b>
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Summary */}
+          <div className="rounded-xl border p-4 flex justify-around text-center">
+            <div>
+              <p className="text-xs text-muted-foreground">Atas (Σαz)</p>
+              <p className="text-lg font-bold">{result.atas}</p>
+            </div>
+            <div className="border-l" />
+            <div>
+              <p className="text-xs text-muted-foreground">Bawah (Σα)</p>
+              <p className="text-lg font-bold">{result.bawah}</p>
+            </div>
+          </div>
         </div>
       )}
     </div>
