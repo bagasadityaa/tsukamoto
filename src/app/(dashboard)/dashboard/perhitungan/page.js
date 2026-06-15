@@ -194,68 +194,6 @@ export default function PerhitunganDetergenPage() {
         </CardFooter>
       </Card>
 
-      <div className=" w-full my-2">
-        <p className="text-lg font-semibold text-center">Nilai Variable</p>
-        Warna .
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead className="w-[100px]">Value</TableHead>
-              <TableHead className="w-[100px]">Invoice</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {WARNA_OPTIONS.map((w) => (
-              <TableRow key={w.value}>
-                <TableCell className="font-medium">{w.value}</TableCell>
-                <TableCell className="font-medium">{w.label}</TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
-      <div className=" w-full my-2">
-        <p className="text-lg font-semibold text-center">
-          Nilai Variabel Berat
-        </p>
-
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead className="w-[100px]">Nilai</TableHead>
-              <TableHead className="w-[100px]">Keterangan</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {BERAT_OPTIONS.map((w) => (
-              <TableRow key={w.value}>
-                <TableCell className="font-medium">{w.value}</TableCell>
-                <TableCell className="font-medium">{w.label}</TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
-      <div className=" w-full my-2">
-        <p className="text-lg font-semibold text-center">Nilai Variabel Kain</p>
-
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead className="w-[100px]">Nilai</TableHead>
-              <TableHead className="w-[100px]">Keterangan</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {KAIN_OPTIONS.map((w) => (
-              <TableRow key={w.value}>
-                <TableCell className="font-medium">{w.value}</TableCell>
-                <TableCell className="font-medium">{w.label}</TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
       {/* Hasil — tidak berubah */}
       {result && (
         <div className="space-y-4 mt-4">
@@ -367,6 +305,68 @@ export default function PerhitunganDetergenPage() {
           </Card>
         </div>
       )}
+      <div className=" w-full my-2">
+        <p className="text-lg font-semibold text-center">Nilai Variable</p>
+        Warna .
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="w-[100px]">Value</TableHead>
+              <TableHead className="w-[100px]">Invoice</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {WARNA_OPTIONS.map((w) => (
+              <TableRow key={w.value}>
+                <TableCell className="font-medium">{w.value}</TableCell>
+                <TableCell className="font-medium">{w.label}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+      <div className=" w-full my-2">
+        <p className="text-lg font-semibold text-center">
+          Nilai Variabel Berat
+        </p>
+
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="w-[100px]">Nilai</TableHead>
+              <TableHead className="w-[100px]">Keterangan</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {BERAT_OPTIONS.map((w) => (
+              <TableRow key={w.value}>
+                <TableCell className="font-medium">{w.value}</TableCell>
+                <TableCell className="font-medium">{w.label}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+      <div className=" w-full my-2">
+        <p className="text-lg font-semibold text-center">Nilai Variabel Kain</p>
+
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="w-[100px]">Nilai</TableHead>
+              <TableHead className="w-[100px]">Keterangan</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {KAIN_OPTIONS.map((w) => (
+              <TableRow key={w.value}>
+                <TableCell className="font-medium">{w.value}</TableCell>
+                <TableCell className="font-medium">{w.label}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
     </div>
   );
 }
