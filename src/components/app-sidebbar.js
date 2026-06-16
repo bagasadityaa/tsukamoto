@@ -31,16 +31,6 @@ export default function AppSidebar() {
       url: "/dashboard/riwayat",
       icon: History,
     },
-    {
-      title: "Data",
-      url: "#",
-      icon: Database,
-    },
-    {
-      title: "Profile",
-      url: "#",
-      icon: User,
-    },
   ];
   const { user } = useAuth();
   return (

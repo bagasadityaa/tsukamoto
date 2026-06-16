@@ -306,8 +306,9 @@ export default function PerhitunganDetergenPage() {
         </div>
       )}
       <div className=" w-full my-2">
-        <p className="text-lg font-semibold text-center">Nilai Variable</p>
-        Warna .
+        <p className="text-lg font-semibold text-center">
+          Nilai Variable Warna
+        </p>
         <Table>
           <TableHeader>
             <TableRow>
