@@ -49,14 +49,19 @@ export default function PerhitunganDetergenPage() {
     { value: 100, label: "Putih" },
   ];
   const BERAT_OPTIONS = [
-    { value: "<4", label: "Ringan" },
-    { value: "2kg - 4", label: "Sedang" },
-    { value: ">4", label: "Berat" },
+    { value: "<4 kg", label: "Ringan" },
+    { value: "2 kg - 4 kg", label: "Sedang" },
+    { value: ">4 kg", label: "Berat" },
   ];
   const KAIN_OPTIONS = [
     { value: "<2,5", label: "Ringan" },
     { value: "1,5 - 3,5", label: "Sedang" },
     { value: ">2,5", label: "Tebal" },
+  ];
+  const KOTOR_OPTIONS = [
+    { value: "<5", label: "Ringan" },
+    { value: "3 - 7", label: "Sedang" },
+    { value: ">5", label: "Tebal" },
   ];
 
   const handleHitung = () => {
@@ -349,7 +354,9 @@ export default function PerhitunganDetergenPage() {
         </Table>
       </div>
       <div className=" w-full my-2">
-        <p className="text-lg font-semibold text-center">Nilai Variabel Kain</p>
+        <p className="text-lg font-semibold text-center">
+          Nilai Variabel Ketebalan Kain
+        </p>
 
         <Table>
           <TableHeader>
@@ -360,6 +367,28 @@ export default function PerhitunganDetergenPage() {
           </TableHeader>
           <TableBody>
             {KAIN_OPTIONS.map((w) => (
+              <TableRow key={w.value}>
+                <TableCell className="font-medium">{w.value}</TableCell>
+                <TableCell className="font-medium">{w.label}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+      <div className=" w-full my-2">
+        <p className="text-lg font-semibold text-center">
+          Nilai Variabel Kotor
+        </p>
+
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="w-[100px]">Nilai</TableHead>
+              <TableHead className="w-[100px]">Keterangan</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {KOTOR_OPTIONS.map((w) => (
               <TableRow key={w.value}>
                 <TableCell className="font-medium">{w.value}</TableCell>
                 <TableCell className="font-medium">{w.label}</TableCell>
